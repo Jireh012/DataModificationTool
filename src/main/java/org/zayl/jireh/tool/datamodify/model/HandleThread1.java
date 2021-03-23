@@ -29,9 +29,18 @@ import static org.zayl.jireh.tool.datamodify.util.Mathematical.StringToInt;
  */
 public class HandleThread1 implements Runnable {
 
+    private static int FLOW_NBRFAILESTAB = 0;
+    private static int FLOW_NBRFAILESTAB_CAUSETRANSPORT = 0;
+    private static int FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = 0;
+    private static int FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = 0;
+    private static int RRC_ATTCONNESTAB = 0;
+    private static int FLOW_NBRSUCCESTAB = 0;
+    private static int FLOW_NBRATTESTAB = 0;
+    private static int RRC_SuccConnEstab = 0;
     private static int CONTEXT_ATTRELGNB_UELOST = 0;
     private static int CONTEXT_ATTRELGNB_NORMAL = 0;
     private static int CONTEXT_ATTRELGNB = 0;
+
 
     private final CountDownLatch threadsSignal;
     private final Map.Entry<String, List<String>> sourceData;
@@ -56,6 +65,30 @@ public class HandleThread1 implements Runnable {
                     break;
                 case "CONTEXT.AttRelgNB.UeLost":
                     CONTEXT_ATTRELGNB_UELOST = i;
+                    break;
+                case "Flow.NbrAttEstab":
+                    FLOW_NBRATTESTAB = i;
+                    break;
+                case "Flow.NbrSuccEstab":
+                    FLOW_NBRSUCCESTAB = i;
+                    break;
+                case "Flow.NbrFailEstab":
+                    FLOW_NBRFAILESTAB = i;
+                    break;
+                case "Flow.NbrFailEstab.CauseTransport":
+                    FLOW_NBRFAILESTAB_CAUSETRANSPORT = i;
+                    break;
+                case "Flow.NbrFailEstab.CauseRadioResourcesNotAvailable":
+                    FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = i;
+                    break;
+                case "Flow.NbrFailEstab.CauseFailureInRadioInterfaceProcedure":
+                    FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = i;
+                    break;
+                case "RRC.AttConnEstab":
+                    RRC_ATTCONNESTAB = i;
+                    break;
+                case "RRC.SuccConnEstab":
+                    RRC_SuccConnEstab = i;
                     break;
                 default:
                     break;
@@ -259,6 +292,31 @@ public class HandleThread1 implements Runnable {
                                     logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 before：" + reader.get(CONTEXT_ATTRELGNB));
                                     stringList[CONTEXT_ATTRELGNB_NORMAL] = reader.get(CONTEXT_ATTRELGNB);
                                     logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 after：" + stringList[CONTEXT_ATTRELGNB_NORMAL]);
+
+                                    logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + reader.get(FLOW_NBRSUCCESTAB));
+                                    stringList[FLOW_NBRSUCCESTAB] = reader.get(FLOW_NBRATTESTAB);
+                                    logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + stringList[FLOW_NBRSUCCESTAB]);
+
+                                    logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB));
+                                    stringList[FLOW_NBRFAILESTAB] = "0";
+                                    logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + stringList[FLOW_NBRFAILESTAB]);
+
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSETRANSPORT));
+                                    stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT] = "0";
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT]);
+
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE));
+                                    stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE] = "0";
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE]);
+
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE));
+                                    stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE] = "0";
+                                    logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
+
+                                    logger.info("RRC_SuccConnEstab 指标修正 before：" + reader.get(RRC_SuccConnEstab));
+                                    stringList[RRC_SuccConnEstab] = reader.get(RRC_ATTCONNESTAB);
+                                    logger.info("RRC_SuccConnEstab 指标修正 before：" + stringList[RRC_SuccConnEstab]);
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     logger.warn("aims: " + reader.get(2) + "\n源数据异常: " + e.getMessage());
