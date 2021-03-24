@@ -63,9 +63,12 @@ public class Main {
             XSSFRow sheetRow = sheet.getRow(s);
             String source = sheetRow.getCell(0).toString();
             XSSFCell aims = sheetRow.getCell(1);
+            int on1 = (int)sheetRow.getCell(2).getNumericCellValue();
+            int on2 = (int)sheetRow.getCell(3).getNumericCellValue();
+            int on3 = (int)sheetRow.getCell(4).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims;
+            String e = source + "￥" + aims+ "￥" + on1+ "￥" + on2+ "￥" + on3;
 
                 if (map.containsKey(source)) {
                     map.get(source).add(e);
