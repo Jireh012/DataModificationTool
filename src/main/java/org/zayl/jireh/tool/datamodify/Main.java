@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zayl.jireh.tool.datamodify.model.HandleThread1;
 import org.zayl.jireh.tool.datamodify.util.PropertiesConfigs;
+import org.zayl.jireh.tool.datamodify.util.RemoteShellExecutor;
 import org.zayl.jireh.tool.datamodify.util.SftpUtilM;
 
 import java.io.File;
@@ -101,6 +102,7 @@ public class Main {
         executorService.shutdown();
 
         SftpUtilM.logoutList();
+        RemoteShellExecutor.close();
         // do work end
         //退出主进程
         logger.info("===========主程序结束===========");

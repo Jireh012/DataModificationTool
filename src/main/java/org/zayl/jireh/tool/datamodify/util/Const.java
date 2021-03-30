@@ -46,6 +46,7 @@ public class Const {
 	 * 创建一个map用于存放channel对象
 	 */
 	public static final Map<String, Channel> SFTP_CHANNEL_POOL = new HashMap<String, Channel>();
+	public static final Map<String, ch.ethz.ssh2.Connection> SSH_CONNECTION_POOL = new HashMap<String, ch.ethz.ssh2.Connection>();
 	public static final Map<String, Channel> SSH_CHANNEL_POOL = new HashMap<String, Channel>();
 	public static final Map<String, String> FILE_IS_DOWN = new HashMap<String, String>();
 	public static Properties SOURCE_PRO = null;

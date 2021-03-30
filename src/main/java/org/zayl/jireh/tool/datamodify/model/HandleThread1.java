@@ -1,14 +1,12 @@
 package org.zayl.jireh.tool.datamodify.model;
 
+import ch.ethz.ssh2.Connection;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import org.apache.log4j.Logger;
-import org.zayl.jireh.tool.datamodify.util.CompressFileGZIP;
-import org.zayl.jireh.tool.datamodify.util.Const;
-import org.zayl.jireh.tool.datamodify.util.SftpUtilM;
-import org.zayl.jireh.tool.datamodify.util.UnCompressFileGZIP;
+import org.zayl.jireh.tool.datamodify.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -219,14 +217,32 @@ public class HandleThread1 implements Runnable {
             logger.info(fileName + ".gz " + "修改后本地文件大小：" + file.length());
             try {
                 InputStream is = new FileInputStream(file);
+                String uploadPath;
                 if ("1".equals(TestModel)) {
-                    SftpUtilM.upload(sftp, "/", properties.get(source + ".path") + "/" +
-                            TestDirNameYmDH, fileName + ".gz", is);
+                    uploadPath = properties.get(source + ".path") + "/" + TestDirNameYmDH;
                 } else {
-                    SftpUtilM.upload(sftp, "/", properties.get(source + ".path") + "/" +
-                            nowTime, fileName + ".gz", is);
+                    uploadPath = properties.get(source + ".path") + "/" + nowTime;
                 }
+                SftpUtilM.upload(sftp, "/", uploadPath, fileName + ".gz", is);
                 logger.info("=======" + source + "上传成功=======");
+
+                Connection connection = RemoteShellExecutor.login(source, properties.get(source + ".user").toString(),
+                        properties.get(source + ".password").toString());
+
+                if (connection == null) {
+                    logger.error("=======" + source + "SSH connection error=======");
+                } else {
+                    try {
+                        RemoteShellExecutor.exec(connection, "ls -l " + uploadPath + "/" + fileName + ".gz");
+                        logger.info("执行 chmod 750 " + uploadPath + "/" + fileName + ".gz");
+                        RemoteShellExecutor.exec(connection, "chmod 750 " + uploadPath + "/" + fileName + ".gz");
+                        logger.info("================alert===============");
+                        RemoteShellExecutor.exec(connection, "ls -l " + uploadPath + "/" + fileName + ".gz");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 long dalen;
                 if ("1".equals(TestModel)) {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
