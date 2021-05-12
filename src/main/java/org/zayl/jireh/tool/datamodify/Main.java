@@ -7,12 +7,14 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zayl.jireh.tool.datamodify.model.HandleThread1;
+import org.zayl.jireh.tool.datamodify.util.JDBCSSHChannel;
 import org.zayl.jireh.tool.datamodify.util.PropertiesConfigs;
 import org.zayl.jireh.tool.datamodify.util.RemoteShellExecutor;
 import org.zayl.jireh.tool.datamodify.util.SftpUtilM;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,16 +31,19 @@ import static org.zayl.jireh.tool.datamodify.util.Const.*;
 public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class);
+    private static Integer type = 0;
 
     public static void main(String[] args) throws Exception {
         logger.info("===========main开始============");
         startTime = System.currentTimeMillis();
         try {
-            if (args.length == 0) {
+            if (args.length <= 1) {
                 PropertiesConfigs.loadConf();
+                type = Integer.valueOf(args[0]);
             } else {
                 PropertiesConfigs.loadConf(args[0]);
                 PropertiesConfigs.loadSource(args[1]);
+                type = Integer.valueOf(args[2]);
             }
         } catch (Exception e) {
             //读取配置异常
@@ -50,6 +55,39 @@ public class Main {
             return;
         }
 
+        switch (type) {
+            default:
+                extractedType1();
+                break;
+            case 1:
+                JDBCSSHChannel.goSSH(22, "10.212.114.156", 22, "ossadm", "Zzwg-2020", "172.31.31.51", 22);
+                //JDBCSSHChannel.goSSH(32022, "192.168.5.101", 22, "root", "OOoo0000", "192.168.5.103", 3389);
+                Thread.sleep(981565445);
+//                Connection connection = RemoteShellExecutor.login("10.212.114.156", "ossadm", "Zzwg-2020");
+//                if (connection == null) {
+//                    logger.error("=======" + connection.getHostname() + "SSH connection error=======");
+//                } else {
+//                    try {
+//                        RemoteShellExecutor.exec(connection, "ssh dbuser@172.31.31.51 -tt");
+//                        RemoteShellExecutor.exec(connection, "Zzwg-2020");
+//                        RemoteShellExecutor.exec(connection, "zsql sys/Admin@123@127.0.0.1:32080");
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+
+        }
+
+        SftpUtilM.logoutList();
+        RemoteShellExecutor.close();
+        // do work end
+        //退出主进程
+        logger.info("===========主程序结束===========");
+        logger.info("本次耗时：" + (System.currentTimeMillis() - startTime) / 1000 + " (秒)");
+    }
+
+    private static void extractedType1() throws IOException, InterruptedException {
         if (!"1".equals(TestModel)) {
             initTimeData();
         }
@@ -64,22 +102,22 @@ public class Main {
             XSSFRow sheetRow = sheet.getRow(s);
             String source = sheetRow.getCell(0).toString();
             XSSFCell aims = sheetRow.getCell(1);
-            int on1 = (int)sheetRow.getCell(2).getNumericCellValue();
-            int on2 = (int)sheetRow.getCell(3).getNumericCellValue();
-            int on3 = (int)sheetRow.getCell(4).getNumericCellValue();
+            int on1 = (int) sheetRow.getCell(2).getNumericCellValue();
+            int on2 = (int) sheetRow.getCell(3).getNumericCellValue();
+            int on3 = (int) sheetRow.getCell(4).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims+ "￥" + on1+ "￥" + on2+ "￥" + on3;
+            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3;
 
-                if (map.containsKey(source)) {
-                    map.get(source).add(e);
-                } else {
-                    // map不包含此key，则重新创建一个新集合，并把这个数字添加进集合
-                    // ，再把集合放到map中
-                    List<String> newList = new ArrayList<>();
-                    newList.add(e);
-                    map.put(source, newList);
-                }
+            if (map.containsKey(source)) {
+                map.get(source).add(e);
+            } else {
+                // map不包含此key，则重新创建一个新集合，并把这个数字添加进集合
+                // ，再把集合放到map中
+                List<String> newList = new ArrayList<>();
+                newList.add(e);
+                map.put(source, newList);
+            }
         }
 
         int threadNum = map.size();
@@ -100,13 +138,6 @@ public class Main {
         //固定线程池执行完成后 将释放掉资源 退出主进程
         //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
         executorService.shutdown();
-
-        SftpUtilM.logoutList();
-        RemoteShellExecutor.close();
-        // do work end
-        //退出主进程
-        logger.info("===========主程序结束===========");
-        logger.info("本次耗时：" + (System.currentTimeMillis() - startTime) / 1000 + " (秒)");
     }
 
     private static void initTimeData() {

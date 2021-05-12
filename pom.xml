@@ -79,6 +79,13 @@
             <artifactId>ganymed-ssh2</artifactId>
             <version>262</version>
         </dependency>
+        <dependency>
+            <groupId>com.huawei.gauss.jdbc.ZenithDriver</groupId>
+            <artifactId>gauss</artifactId>
+            <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/com.huawei.gauss.jdbc.ZenithDriver-GaussDB_100_1.0.0.B019.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <repositories>
