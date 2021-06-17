@@ -20,32 +20,17 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.zayl.jireh.tool.datamodify.util.Const.*;
 import static org.zayl.jireh.tool.datamodify.util.FileUtil.isChartPathExist;
-import static org.zayl.jireh.tool.datamodify.util.Mathematical.StringToInt;
 
 /**
  * @author last_
  */
-public class HandleGnbSaThread implements Runnable {
-
-    private static int FLOW_NBRFAILESTAB = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSETRANSPORT = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = 0;
-    private static int RRC_ATTCONNESTAB = 0;
-    private static int FLOW_NBRSUCCESTAB = 0;
-    private static int FLOW_NBRATTESTAB = 0;
-    private static int RRC_SuccConnEstab = 0;
-    private static int CONTEXT_ATTRELGNB_UELOST = 0;
-    private static int CONTEXT_ATTRELGNB_NORMAL = 0;
-    private static int CONTEXT_ATTRELGNB = 0;
-
-
+public class HandleGnbsNsaDuThread implements Runnable {
     private final CountDownLatch threadsSignal;
     private final Map.Entry<String, List<String>> sourceData;
 
-    private final Logger logger = Logger.getLogger(HandleGnbSaThread.class);
+    private final Logger logger = Logger.getLogger(HandleGnbsNsaDuThread.class);
 
-    public HandleGnbSaThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
+    public HandleGnbsNsaDuThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
         this.threadsSignal = threadsSignal;
         this.sourceData = sourceData;
     }
@@ -55,38 +40,824 @@ public class HandleGnbSaThread implements Runnable {
         //初始化相关列位置
         while (i < reader.getValues().length) {
             switch (reader.get(i)) {
-                case "CONTEXT.AttRelgNB":
-                    CONTEXT_ATTRELGNB = i;
+                case "PHY.ULMeanNL.PRB0":
+                    PHY_ULMeanNL_PRB0 = i;
                     break;
-                case "CONTEXT.AttRelgNB.Normal":
-                    CONTEXT_ATTRELGNB_NORMAL = i;
+                case "PHY.ULMeanNL.PRB1":
+                    PHY_ULMeanNL_PRB1 = i;
                     break;
-                case "CONTEXT.AttRelgNB.UeLost":
-                    CONTEXT_ATTRELGNB_UELOST = i;
+                case "PHY.ULMeanNL.PRB2":
+                    PHY_ULMeanNL_PRB2 = i;
                     break;
-                case "Flow.NbrAttEstab":
-                    FLOW_NBRATTESTAB = i;
+                case "PHY.ULMeanNL.PRB3":
+                    PHY_ULMeanNL_PRB3 = i;
                     break;
-                case "Flow.NbrSuccEstab":
-                    FLOW_NBRSUCCESTAB = i;
+                case "PHY.ULMeanNL.PRB4":
+                    PHY_ULMeanNL_PRB4 = i;
                     break;
-                case "Flow.NbrFailEstab":
-                    FLOW_NBRFAILESTAB = i;
+                case "PHY.ULMeanNL.PRB5":
+                    PHY_ULMeanNL_PRB5 = i;
                     break;
-                case "Flow.NbrFailEstab.CauseTransport":
-                    FLOW_NBRFAILESTAB_CAUSETRANSPORT = i;
+                case "PHY.ULMeanNL.PRB6":
+                    PHY_ULMeanNL_PRB6 = i;
                     break;
-                case "Flow.NbrFailEstab.CauseRadioResourcesNotAvailable":
-                    FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = i;
+                case "PHY.ULMeanNL.PRB7":
+                    PHY_ULMeanNL_PRB7 = i;
                     break;
-                case "Flow.NbrFailEstab.CauseFailureInRadioInterfaceProcedure":
-                    FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = i;
+                case "PHY.ULMeanNL.PRB8":
+                    PHY_ULMeanNL_PRB8 = i;
                     break;
-                case "RRC.AttConnEstab":
-                    RRC_ATTCONNESTAB = i;
+                case "PHY.ULMeanNL.PRB9":
+                    PHY_ULMeanNL_PRB9 = i;
                     break;
-                case "RRC.SuccConnEstab":
-                    RRC_SuccConnEstab = i;
+                case "PHY.ULMeanNL.PRB10":
+                    PHY_ULMeanNL_PRB10 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB11":
+                    PHY_ULMeanNL_PRB11 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB12":
+                    PHY_ULMeanNL_PRB12 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB13":
+                    PHY_ULMeanNL_PRB13 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB14":
+                    PHY_ULMeanNL_PRB14 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB15":
+                    PHY_ULMeanNL_PRB15 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB16":
+                    PHY_ULMeanNL_PRB16 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB17":
+                    PHY_ULMeanNL_PRB17 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB18":
+                    PHY_ULMeanNL_PRB18 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB19":
+                    PHY_ULMeanNL_PRB19 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB20":
+                    PHY_ULMeanNL_PRB20 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB21":
+                    PHY_ULMeanNL_PRB21 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB22":
+                    PHY_ULMeanNL_PRB22 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB23":
+                    PHY_ULMeanNL_PRB23 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB24":
+                    PHY_ULMeanNL_PRB24 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB25":
+                    PHY_ULMeanNL_PRB25 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB26":
+                    PHY_ULMeanNL_PRB26 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB27":
+                    PHY_ULMeanNL_PRB27 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB28":
+                    PHY_ULMeanNL_PRB28 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB29":
+                    PHY_ULMeanNL_PRB29 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB30":
+                    PHY_ULMeanNL_PRB30 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB31":
+                    PHY_ULMeanNL_PRB31 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB32":
+                    PHY_ULMeanNL_PRB32 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB33":
+                    PHY_ULMeanNL_PRB33 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB34":
+                    PHY_ULMeanNL_PRB34 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB35":
+                    PHY_ULMeanNL_PRB35 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB36":
+                    PHY_ULMeanNL_PRB36 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB37":
+                    PHY_ULMeanNL_PRB37 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB38":
+                    PHY_ULMeanNL_PRB38 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB39":
+                    PHY_ULMeanNL_PRB39 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB40":
+                    PHY_ULMeanNL_PRB40 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB41":
+                    PHY_ULMeanNL_PRB41 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB42":
+                    PHY_ULMeanNL_PRB42 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB43":
+                    PHY_ULMeanNL_PRB43 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB44":
+                    PHY_ULMeanNL_PRB44 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB45":
+                    PHY_ULMeanNL_PRB45 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB46":
+                    PHY_ULMeanNL_PRB46 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB47":
+                    PHY_ULMeanNL_PRB47 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB48":
+                    PHY_ULMeanNL_PRB48 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB49":
+                    PHY_ULMeanNL_PRB49 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB50":
+                    PHY_ULMeanNL_PRB50 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB51":
+                    PHY_ULMeanNL_PRB51 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB52":
+                    PHY_ULMeanNL_PRB52 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB53":
+                    PHY_ULMeanNL_PRB53 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB54":
+                    PHY_ULMeanNL_PRB54 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB55":
+                    PHY_ULMeanNL_PRB55 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB56":
+                    PHY_ULMeanNL_PRB56 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB57":
+                    PHY_ULMeanNL_PRB57 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB58":
+                    PHY_ULMeanNL_PRB58 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB59":
+                    PHY_ULMeanNL_PRB59 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB60":
+                    PHY_ULMeanNL_PRB60 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB61":
+                    PHY_ULMeanNL_PRB61 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB62":
+                    PHY_ULMeanNL_PRB62 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB63":
+                    PHY_ULMeanNL_PRB63 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB64":
+                    PHY_ULMeanNL_PRB64 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB65":
+                    PHY_ULMeanNL_PRB65 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB66":
+                    PHY_ULMeanNL_PRB66 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB67":
+                    PHY_ULMeanNL_PRB67 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB68":
+                    PHY_ULMeanNL_PRB68 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB69":
+                    PHY_ULMeanNL_PRB69 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB70":
+                    PHY_ULMeanNL_PRB70 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB71":
+                    PHY_ULMeanNL_PRB71 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB72":
+                    PHY_ULMeanNL_PRB72 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB73":
+                    PHY_ULMeanNL_PRB73 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB74":
+                    PHY_ULMeanNL_PRB74 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB75":
+                    PHY_ULMeanNL_PRB75 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB76":
+                    PHY_ULMeanNL_PRB76 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB77":
+                    PHY_ULMeanNL_PRB77 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB78":
+                    PHY_ULMeanNL_PRB78 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB79":
+                    PHY_ULMeanNL_PRB79 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB80":
+                    PHY_ULMeanNL_PRB80 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB81":
+                    PHY_ULMeanNL_PRB81 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB82":
+                    PHY_ULMeanNL_PRB82 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB83":
+                    PHY_ULMeanNL_PRB83 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB84":
+                    PHY_ULMeanNL_PRB84 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB85":
+                    PHY_ULMeanNL_PRB85 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB86":
+                    PHY_ULMeanNL_PRB86 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB87":
+                    PHY_ULMeanNL_PRB87 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB88":
+                    PHY_ULMeanNL_PRB88 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB89":
+                    PHY_ULMeanNL_PRB89 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB90":
+                    PHY_ULMeanNL_PRB90 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB91":
+                    PHY_ULMeanNL_PRB91 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB92":
+                    PHY_ULMeanNL_PRB92 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB93":
+                    PHY_ULMeanNL_PRB93 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB94":
+                    PHY_ULMeanNL_PRB94 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB95":
+                    PHY_ULMeanNL_PRB95 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB96":
+                    PHY_ULMeanNL_PRB96 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB97":
+                    PHY_ULMeanNL_PRB97 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB98":
+                    PHY_ULMeanNL_PRB98 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB99":
+                    PHY_ULMeanNL_PRB99 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB100":
+                    PHY_ULMeanNL_PRB100 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB101":
+                    PHY_ULMeanNL_PRB101 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB102":
+                    PHY_ULMeanNL_PRB102 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB103":
+                    PHY_ULMeanNL_PRB103 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB104":
+                    PHY_ULMeanNL_PRB104 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB105":
+                    PHY_ULMeanNL_PRB105 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB106":
+                    PHY_ULMeanNL_PRB106 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB107":
+                    PHY_ULMeanNL_PRB107 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB108":
+                    PHY_ULMeanNL_PRB108 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB109":
+                    PHY_ULMeanNL_PRB109 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB110":
+                    PHY_ULMeanNL_PRB110 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB111":
+                    PHY_ULMeanNL_PRB111 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB112":
+                    PHY_ULMeanNL_PRB112 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB113":
+                    PHY_ULMeanNL_PRB113 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB114":
+                    PHY_ULMeanNL_PRB114 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB115":
+                    PHY_ULMeanNL_PRB115 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB116":
+                    PHY_ULMeanNL_PRB116 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB117":
+                    PHY_ULMeanNL_PRB117 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB118":
+                    PHY_ULMeanNL_PRB118 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB119":
+                    PHY_ULMeanNL_PRB119 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB120":
+                    PHY_ULMeanNL_PRB120 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB121":
+                    PHY_ULMeanNL_PRB121 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB122":
+                    PHY_ULMeanNL_PRB122 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB123":
+                    PHY_ULMeanNL_PRB123 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB124":
+                    PHY_ULMeanNL_PRB124 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB125":
+                    PHY_ULMeanNL_PRB125 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB126":
+                    PHY_ULMeanNL_PRB126 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB127":
+                    PHY_ULMeanNL_PRB127 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB128":
+                    PHY_ULMeanNL_PRB128 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB129":
+                    PHY_ULMeanNL_PRB129 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB130":
+                    PHY_ULMeanNL_PRB130 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB131":
+                    PHY_ULMeanNL_PRB131 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB132":
+                    PHY_ULMeanNL_PRB132 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB133":
+                    PHY_ULMeanNL_PRB133 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB134":
+                    PHY_ULMeanNL_PRB134 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB135":
+                    PHY_ULMeanNL_PRB135 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB136":
+                    PHY_ULMeanNL_PRB136 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB137":
+                    PHY_ULMeanNL_PRB137 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB138":
+                    PHY_ULMeanNL_PRB138 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB139":
+                    PHY_ULMeanNL_PRB139 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB140":
+                    PHY_ULMeanNL_PRB140 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB141":
+                    PHY_ULMeanNL_PRB141 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB142":
+                    PHY_ULMeanNL_PRB142 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB143":
+                    PHY_ULMeanNL_PRB143 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB144":
+                    PHY_ULMeanNL_PRB144 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB145":
+                    PHY_ULMeanNL_PRB145 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB146":
+                    PHY_ULMeanNL_PRB146 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB147":
+                    PHY_ULMeanNL_PRB147 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB148":
+                    PHY_ULMeanNL_PRB148 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB149":
+                    PHY_ULMeanNL_PRB149 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB150":
+                    PHY_ULMeanNL_PRB150 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB151":
+                    PHY_ULMeanNL_PRB151 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB152":
+                    PHY_ULMeanNL_PRB152 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB153":
+                    PHY_ULMeanNL_PRB153 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB154":
+                    PHY_ULMeanNL_PRB154 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB155":
+                    PHY_ULMeanNL_PRB155 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB156":
+                    PHY_ULMeanNL_PRB156 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB157":
+                    PHY_ULMeanNL_PRB157 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB158":
+                    PHY_ULMeanNL_PRB158 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB159":
+                    PHY_ULMeanNL_PRB159 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB160":
+                    PHY_ULMeanNL_PRB160 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB161":
+                    PHY_ULMeanNL_PRB161 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB162":
+                    PHY_ULMeanNL_PRB162 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB163":
+                    PHY_ULMeanNL_PRB163 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB164":
+                    PHY_ULMeanNL_PRB164 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB165":
+                    PHY_ULMeanNL_PRB165 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB166":
+                    PHY_ULMeanNL_PRB166 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB167":
+                    PHY_ULMeanNL_PRB167 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB168":
+                    PHY_ULMeanNL_PRB168 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB169":
+                    PHY_ULMeanNL_PRB169 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB170":
+                    PHY_ULMeanNL_PRB170 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB171":
+                    PHY_ULMeanNL_PRB171 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB172":
+                    PHY_ULMeanNL_PRB172 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB173":
+                    PHY_ULMeanNL_PRB173 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB174":
+                    PHY_ULMeanNL_PRB174 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB175":
+                    PHY_ULMeanNL_PRB175 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB176":
+                    PHY_ULMeanNL_PRB176 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB177":
+                    PHY_ULMeanNL_PRB177 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB178":
+                    PHY_ULMeanNL_PRB178 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB179":
+                    PHY_ULMeanNL_PRB179 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB180":
+                    PHY_ULMeanNL_PRB180 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB181":
+                    PHY_ULMeanNL_PRB181 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB182":
+                    PHY_ULMeanNL_PRB182 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB183":
+                    PHY_ULMeanNL_PRB183 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB184":
+                    PHY_ULMeanNL_PRB184 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB185":
+                    PHY_ULMeanNL_PRB185 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB186":
+                    PHY_ULMeanNL_PRB186 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB187":
+                    PHY_ULMeanNL_PRB187 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB188":
+                    PHY_ULMeanNL_PRB188 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB189":
+                    PHY_ULMeanNL_PRB189 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB190":
+                    PHY_ULMeanNL_PRB190 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB191":
+                    PHY_ULMeanNL_PRB191 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB192":
+                    PHY_ULMeanNL_PRB192 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB193":
+                    PHY_ULMeanNL_PRB193 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB194":
+                    PHY_ULMeanNL_PRB194 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB195":
+                    PHY_ULMeanNL_PRB195 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB196":
+                    PHY_ULMeanNL_PRB196 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB197":
+                    PHY_ULMeanNL_PRB197 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB198":
+                    PHY_ULMeanNL_PRB198 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB199":
+                    PHY_ULMeanNL_PRB199 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB200":
+                    PHY_ULMeanNL_PRB200 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB201":
+                    PHY_ULMeanNL_PRB201 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB202":
+                    PHY_ULMeanNL_PRB202 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB203":
+                    PHY_ULMeanNL_PRB203 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB204":
+                    PHY_ULMeanNL_PRB204 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB205":
+                    PHY_ULMeanNL_PRB205 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB206":
+                    PHY_ULMeanNL_PRB206 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB207":
+                    PHY_ULMeanNL_PRB207 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB208":
+                    PHY_ULMeanNL_PRB208 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB209":
+                    PHY_ULMeanNL_PRB209 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB210":
+                    PHY_ULMeanNL_PRB210 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB211":
+                    PHY_ULMeanNL_PRB211 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB212":
+                    PHY_ULMeanNL_PRB212 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB213":
+                    PHY_ULMeanNL_PRB213 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB214":
+                    PHY_ULMeanNL_PRB214 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB215":
+                    PHY_ULMeanNL_PRB215 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB216":
+                    PHY_ULMeanNL_PRB216 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB217":
+                    PHY_ULMeanNL_PRB217 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB218":
+                    PHY_ULMeanNL_PRB218 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB219":
+                    PHY_ULMeanNL_PRB219 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB220":
+                    PHY_ULMeanNL_PRB220 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB221":
+                    PHY_ULMeanNL_PRB221 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB222":
+                    PHY_ULMeanNL_PRB222 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB223":
+                    PHY_ULMeanNL_PRB223 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB224":
+                    PHY_ULMeanNL_PRB224 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB225":
+                    PHY_ULMeanNL_PRB225 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB226":
+                    PHY_ULMeanNL_PRB226 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB227":
+                    PHY_ULMeanNL_PRB227 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB228":
+                    PHY_ULMeanNL_PRB228 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB229":
+                    PHY_ULMeanNL_PRB229 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB230":
+                    PHY_ULMeanNL_PRB230 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB231":
+                    PHY_ULMeanNL_PRB231 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB232":
+                    PHY_ULMeanNL_PRB232 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB233":
+                    PHY_ULMeanNL_PRB233 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB234":
+                    PHY_ULMeanNL_PRB234 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB235":
+                    PHY_ULMeanNL_PRB235 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB236":
+                    PHY_ULMeanNL_PRB236 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB237":
+                    PHY_ULMeanNL_PRB237 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB238":
+                    PHY_ULMeanNL_PRB238 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB239":
+                    PHY_ULMeanNL_PRB239 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB240":
+                    PHY_ULMeanNL_PRB240 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB241":
+                    PHY_ULMeanNL_PRB241 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB242":
+                    PHY_ULMeanNL_PRB242 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB243":
+                    PHY_ULMeanNL_PRB243 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB244":
+                    PHY_ULMeanNL_PRB244 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB245":
+                    PHY_ULMeanNL_PRB245 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB246":
+                    PHY_ULMeanNL_PRB246 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB247":
+                    PHY_ULMeanNL_PRB247 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB248":
+                    PHY_ULMeanNL_PRB248 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB249":
+                    PHY_ULMeanNL_PRB249 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB250":
+                    PHY_ULMeanNL_PRB250 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB251":
+                    PHY_ULMeanNL_PRB251 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB252":
+                    PHY_ULMeanNL_PRB252 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB253":
+                    PHY_ULMeanNL_PRB253 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB254":
+                    PHY_ULMeanNL_PRB254 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB255":
+                    PHY_ULMeanNL_PRB255 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB256":
+                    PHY_ULMeanNL_PRB256 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB257":
+                    PHY_ULMeanNL_PRB257 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB258":
+                    PHY_ULMeanNL_PRB258 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB259":
+                    PHY_ULMeanNL_PRB259 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB260":
+                    PHY_ULMeanNL_PRB260 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB261":
+                    PHY_ULMeanNL_PRB261 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB262":
+                    PHY_ULMeanNL_PRB262 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB263":
+                    PHY_ULMeanNL_PRB263 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB264":
+                    PHY_ULMeanNL_PRB264 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB265":
+                    PHY_ULMeanNL_PRB265 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB266":
+                    PHY_ULMeanNL_PRB266 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB267":
+                    PHY_ULMeanNL_PRB267 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB268":
+                    PHY_ULMeanNL_PRB268 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB269":
+                    PHY_ULMeanNL_PRB269 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB270":
+                    PHY_ULMeanNL_PRB270 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB271":
+                    PHY_ULMeanNL_PRB271 = i;
+                    break;
+                case "PHY.ULMeanNL.PRB272":
+                    PHY_ULMeanNL_PRB272 = i;
                     break;
                 default:
                     break;
@@ -118,12 +889,12 @@ public class HandleGnbSaThread implements Runnable {
             String str = null;
             long tttt = System.currentTimeMillis();
             if ("1".equals(TestModel)) {
-                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-NSA-NRCELLDU-" +
                         properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                                TestDirNameYmDH + "/PM-GNB-NSA-NRCELLDU-" +
                                 properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -150,7 +921,7 @@ public class HandleGnbSaThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") +
+                    fileName = "PM-GNB-NSA-NRCELLDU-" + properties.get(source + ".id") +
                             "-" + verSion + "-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv";
                     logger.info("测试模式 文件名：" + fileName);
                     path = saveFilePath + TestDirNameYmDH + TestFileNameMMss + "_" + source + "_" + tttt + File.separator;
@@ -159,12 +930,12 @@ public class HandleGnbSaThread implements Runnable {
                             fileName + ".gz", path + fileName + ".gz");
                 }
             } else {
-                logger.info("获取：" + nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + nowTime + "/PM-GNB-NSA-NRCELLDU-" +
                         properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                                nowTime + "/PM-GNB-NSA-NRCELLDU-" +
                                 properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -192,7 +963,7 @@ public class HandleGnbSaThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") + "-" +
+                    fileName = "PM-GNB-NSA-NRCELLDU-" + properties.get(source + ".id") + "-" +
                             verSion + "-" + nowTime + TimeMm + "-15.csv";
                     logger.info("正常模式 文件名：" + fileName);
                     path = saveFilePath + nowTime + TimeMm + "_" + source + "_" + tttt + File.separator;
@@ -246,15 +1017,15 @@ public class HandleGnbSaThread implements Runnable {
                 long dalen;
                 if ("1".equals(TestModel)) {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                            TestDirNameYmDH + "/PM-GNB-NSA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info("PM-GNB-NSA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 } else {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                            nowTime + "/PM-GNB-NSA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info("PM-GNB-NSA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 }
             } catch (IOException e) {
@@ -298,52 +1069,9 @@ public class HandleGnbSaThread implements Runnable {
                     if (value.toString().contains(reader.get(Integer.parseInt(Const.aimsType)))) {
                         for (String li : value) {
                             if (reader.get(Integer.parseInt(Const.aimsType)).equals(li.split("￥")[1])) {
-                                int on1 = Integer.parseInt(li.split("￥")[2]);
-                                int on2 = Integer.parseInt(li.split("￥")[3]);
-                                int on3 = Integer.parseInt(li.split("￥")[4]);
                                 int on4 = Integer.parseInt(li.split("￥")[5]);
 
                                 try {
-                                    if (on1 == 1) {
-                                        logger.info("指标修正 当前：" + reader.get(2));
-                                        int contextAttrelgnbUelostValue = StringToInt(reader.get(CONTEXT_ATTRELGNB_UELOST));
-                                        if (contextAttrelgnbUelostValue > 0) {
-                                            logger.info("CONTEXT_ATTRELGNB_UELOST指标 before：" + contextAttrelgnbUelostValue);
-                                            stringList[CONTEXT_ATTRELGNB_UELOST] = "0";
-                                        }
-                                        logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 before：" + reader.get(CONTEXT_ATTRELGNB));
-                                        stringList[CONTEXT_ATTRELGNB_NORMAL] = reader.get(CONTEXT_ATTRELGNB);
-                                        logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 after：" + stringList[CONTEXT_ATTRELGNB_NORMAL]);
-                                    }
-
-                                    if (on2 == 1) {
-                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + reader.get(FLOW_NBRSUCCESTAB));
-                                        stringList[FLOW_NBRSUCCESTAB] = reader.get(FLOW_NBRATTESTAB);
-                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + stringList[FLOW_NBRSUCCESTAB]);
-
-                                        logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB));
-                                        stringList[FLOW_NBRFAILESTAB] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + stringList[FLOW_NBRFAILESTAB]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSETRANSPORT));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
-                                    }
-
-                                    if (on3 == 1) {
-                                        logger.info("RRC_SuccConnEstab 指标修正 before：" + reader.get(RRC_SuccConnEstab));
-                                        stringList[RRC_SuccConnEstab] = reader.get(RRC_ATTCONNESTAB);
-                                        logger.info("RRC_SuccConnEstab 指标修正 before：" + stringList[RRC_SuccConnEstab]);
-                                    }
-
                                     if (on4 == 1) {
                                         for (int i = 0; i <= 272; i++) {
                                             if (!reader.get(getPHY_ULMeanNL_PRBPosition(i)).isEmpty() && Integer.parseInt(reader.get(getPHY_ULMeanNL_PRBPosition(i))) > -110) {
@@ -356,7 +1084,6 @@ public class HandleGnbSaThread implements Runnable {
                                             }
                                         }
                                     }
-
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     logger.warn("aims: " + reader.get(2) + "\n源数据异常: " + e.getMessage());

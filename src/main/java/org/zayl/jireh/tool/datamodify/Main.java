@@ -6,8 +6,9 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.zayl.jireh.tool.datamodify.model.HandleGnbSaThread;
-import org.zayl.jireh.tool.datamodify.model.HandleGnbsNsaThread;
+import org.zayl.jireh.tool.datamodify.model.HandleGnbSaCuThread;
+import org.zayl.jireh.tool.datamodify.model.HandleGnbSaDuThread;
+import org.zayl.jireh.tool.datamodify.model.HandleGnbsNsaDuThread;
 import org.zayl.jireh.tool.datamodify.util.JDBCSSHChannel;
 import org.zayl.jireh.tool.datamodify.util.PropertiesConfigs;
 import org.zayl.jireh.tool.datamodify.util.RemoteShellExecutor;
@@ -126,28 +127,35 @@ public class Main {
         int threadNum = map.size();
         CountDownLatch threadSignal1 = new CountDownLatch(threadNum);
         CountDownLatch threadSignal2 = new CountDownLatch(threadNum);
+        CountDownLatch threadSignal3 = new CountDownLatch(threadNum);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("data-modify-pool-%d").setDaemon(true).build();
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(threadNum,
                 threadFactory);
         ScheduledExecutorService executorService2 = new ScheduledThreadPoolExecutor(threadNum,
                 threadFactory);
+        ScheduledExecutorService executorService3 = new ScheduledThreadPoolExecutor(threadNum,
+                threadFactory);
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            Runnable task1 = new HandleGnbSaThread(threadSignal1, entry);
-            Runnable task2 = new HandleGnbsNsaThread(threadSignal2, entry);
+            Runnable task1 = new HandleGnbSaCuThread(threadSignal1, entry);
+            Runnable task2 = new HandleGnbSaDuThread(threadSignal2, entry);
+            Runnable task3 = new HandleGnbsNsaDuThread(threadSignal3, entry);
             // 执行
             executorService.execute(task1);
             executorService2.execute(task2);
+            executorService3.execute(task3);
         }
 
         // 等待所有子线程执行完
         threadSignal1.await();
         threadSignal2.await();
+        threadSignal3.await();
 
         //固定线程池执行完成后 将释放掉资源 退出主进程
         //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
         executorService.shutdown();
         executorService2.shutdown();
+        executorService3.shutdown();
     }
 
     private static void initTimeData() {

@@ -25,13 +25,13 @@ import static org.zayl.jireh.tool.datamodify.util.Mathematical.StringToInt;
 /**
  * @author last_
  */
-public class HandleGnbsNsaThread implements Runnable {
+public class HandleGnbSaDuThread implements Runnable {
     private final CountDownLatch threadsSignal;
     private final Map.Entry<String, List<String>> sourceData;
 
-    private final Logger logger = Logger.getLogger(HandleGnbsNsaThread.class);
+    private final Logger logger = Logger.getLogger(HandleGnbSaDuThread.class);
 
-    public HandleGnbsNsaThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
+    public HandleGnbSaDuThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
         this.threadsSignal = threadsSignal;
         this.sourceData = sourceData;
     }
@@ -890,12 +890,12 @@ public class HandleGnbsNsaThread implements Runnable {
             String str = null;
             long tttt = System.currentTimeMillis();
             if ("1".equals(TestModel)) {
-                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-NSA-NRCELLCU-" +
+                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-SA-NRCELLDU-" +
                         properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                TestDirNameYmDH + "/PM-GNB-NSA-NRCELLCU-" +
+                                TestDirNameYmDH + "/PM-GNB-SA-NRCELLDU-" +
                                 properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -922,7 +922,7 @@ public class HandleGnbsNsaThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-NSA-NRCELLCU-" + properties.get(source + ".id") +
+                    fileName = "PM-GNB-SA-NRCELLDU-" + properties.get(source + ".id") +
                             "-" + verSion + "-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv";
                     logger.info("测试模式 文件名：" + fileName);
                     path = saveFilePath + TestDirNameYmDH + TestFileNameMMss + "_" + source + "_" + tttt + File.separator;
@@ -931,12 +931,12 @@ public class HandleGnbsNsaThread implements Runnable {
                             fileName + ".gz", path + fileName + ".gz");
                 }
             } else {
-                logger.info("获取：" + nowTime + "/PM-GNB-NSA-NRCELLCU-" +
+                logger.info("获取：" + nowTime + "/PM-GNB-SA-NRCELLDU-" +
                         properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                nowTime + "/PM-GNB-NSA-NRCELLCU-" +
+                                nowTime + "/PM-GNB-SA-NRCELLDU-" +
                                 properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -964,7 +964,7 @@ public class HandleGnbsNsaThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-NSA-NRCELLCU-" + properties.get(source + ".id") + "-" +
+                    fileName = "PM-GNB-SA-NRCELLDU-" + properties.get(source + ".id") + "-" +
                             verSion + "-" + nowTime + TimeMm + "-15.csv";
                     logger.info("正常模式 文件名：" + fileName);
                     path = saveFilePath + nowTime + TimeMm + "_" + source + "_" + tttt + File.separator;
@@ -1018,15 +1018,15 @@ public class HandleGnbsNsaThread implements Runnable {
                 long dalen;
                 if ("1".equals(TestModel)) {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            TestDirNameYmDH + "/PM-GNB-NSA-NRCELLCU-" +
+                            TestDirNameYmDH + "/PM-GNB-SA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-NSA-NRCELLCU-" +
+                    logger.info("PM-GNB-SA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 } else {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            nowTime + "/PM-GNB-NSA-NRCELLCU-" +
+                            nowTime + "/PM-GNB-SA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-NSA-NRCELLCU-" +
+                    logger.info("PM-GNB-SA-NRCELLDU-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 }
             } catch (IOException e) {
@@ -1071,7 +1071,6 @@ public class HandleGnbsNsaThread implements Runnable {
                         for (String li : value) {
                             if (reader.get(Integer.parseInt(Const.aimsType)).equals(li.split("￥")[1])) {
                                 int on4 = Integer.parseInt(li.split("￥")[5]);
-
                                 try {
                                     if (on4 == 1) {
                                         for (int i = 0; i <= 272; i++) {
@@ -1085,6 +1084,7 @@ public class HandleGnbsNsaThread implements Runnable {
                                             }
                                         }
                                     }
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     logger.warn("aims: " + reader.get(2) + "\n源数据异常: " + e.getMessage());
