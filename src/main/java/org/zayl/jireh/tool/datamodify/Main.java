@@ -60,6 +60,7 @@ public class Main {
 
         switch (type) {
             default:
+            case 0:
                 extractedType1();
                 break;
             case 1:

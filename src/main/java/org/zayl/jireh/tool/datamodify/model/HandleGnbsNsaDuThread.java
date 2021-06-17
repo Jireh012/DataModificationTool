@@ -1077,7 +1077,7 @@ public class HandleGnbsNsaDuThread implements Runnable {
                                             if (!reader.get(getPHY_ULMeanNL_PRBPosition(i)).isEmpty() && Integer.parseInt(reader.get(getPHY_ULMeanNL_PRBPosition(i))) > -110) {
                                                 logger.info("PHY_ULMeanNL_PRB指标修正 当前:" + reader.get(2));
                                                 logger.info("PHY_ULMeanNL_PRB指标 当前:" + reader.get(getPHY_ULMeanNL_PRBPosition(i)));
-                                                int min1 = 113, max1 = 117;
+                                                int min1 = 114, max1 = 116;
                                                 int rd1 = 0 - (min1 + (int) (Math.random() * ((max1 - min1) + 1)));
                                                 stringList[getPHY_ULMeanNL_PRBPosition(i)] = String.valueOf(rd1);
                                                 logger.info("PHY_ULMeanNL_PRB指标 修改后:" + stringList[getPHY_ULMeanNL_PRBPosition(i)]);
