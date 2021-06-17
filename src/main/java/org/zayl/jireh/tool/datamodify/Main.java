@@ -6,7 +6,8 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.zayl.jireh.tool.datamodify.model.HandleThread1;
+import org.zayl.jireh.tool.datamodify.model.HandleGnbSaThread;
+import org.zayl.jireh.tool.datamodify.model.HandleGnbsNsaThread;
 import org.zayl.jireh.tool.datamodify.util.JDBCSSHChannel;
 import org.zayl.jireh.tool.datamodify.util.PropertiesConfigs;
 import org.zayl.jireh.tool.datamodify.util.RemoteShellExecutor;
@@ -50,6 +51,7 @@ public class Main {
             e.printStackTrace();
             logger.error("读取配置异常" + e.getMessage());
         }
+
         if (SOURCE_PRO == null) {
             logger.warn("数据源异常，请检查sourceConfig是否被正确加载");
             return;
@@ -105,9 +107,10 @@ public class Main {
             int on1 = (int) sheetRow.getCell(2).getNumericCellValue();
             int on2 = (int) sheetRow.getCell(3).getNumericCellValue();
             int on3 = (int) sheetRow.getCell(4).getNumericCellValue();
+            int on4 = (int) sheetRow.getCell(5).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3;
+            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3+ "￥" + on4;
 
             if (map.containsKey(source)) {
                 map.get(source).add(e);
@@ -121,23 +124,30 @@ public class Main {
         }
 
         int threadNum = map.size();
-        CountDownLatch threadSignal = new CountDownLatch(threadNum);
+        CountDownLatch threadSignal1 = new CountDownLatch(threadNum);
+        CountDownLatch threadSignal2 = new CountDownLatch(threadNum);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("enmbx-pool-%d").setDaemon(true).build();
+                .setNameFormat("data-modify-pool-%d").setDaemon(true).build();
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(threadNum,
                 threadFactory);
+        ScheduledExecutorService executorService2 = new ScheduledThreadPoolExecutor(threadNum,
+                threadFactory);
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            Runnable task = new HandleThread1(threadSignal, entry);
+            Runnable task1 = new HandleGnbSaThread(threadSignal1, entry);
+            Runnable task2 = new HandleGnbsNsaThread(threadSignal2, entry);
             // 执行
-            executorService.execute(task);
+            executorService.execute(task1);
+            executorService2.execute(task2);
         }
 
         // 等待所有子线程执行完
-        threadSignal.await();
+        threadSignal1.await();
+        threadSignal2.await();
 
         //固定线程池执行完成后 将释放掉资源 退出主进程
         //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
         executorService.shutdown();
+        executorService2.shutdown();
     }
 
     private static void initTimeData() {
