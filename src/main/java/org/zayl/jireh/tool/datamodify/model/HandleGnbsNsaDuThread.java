@@ -30,6 +30,9 @@ public class HandleGnbsNsaDuThread implements Runnable {
 
     private final Logger logger = Logger.getLogger(HandleGnbsNsaDuThread.class);
 
+    private String ymd;
+    private String nms;
+
     public HandleGnbsNsaDuThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
         this.threadsSignal = threadsSignal;
         this.sourceData = sourceData;
@@ -889,13 +892,15 @@ public class HandleGnbsNsaDuThread implements Runnable {
             String str = null;
             long tttt = System.currentTimeMillis();
             if ("1".equals(TestModel)) {
-                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-NSA-NRCELLDU-" +
-                        properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz");
+                ymd=TestDirNameYmDH;
+                nms=TestFileNameMMss;
+                logger.info("获取：" + ymd + "/PM-GNB-NSA-NRCELLDU-" +
+                        properties.get(source + ".id") + "-*-" + ymd + nms + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                TestDirNameYmDH + "/PM-GNB-NSA-NRCELLDU-" +
-                                properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").toString();
+                                ymd + "/PM-GNB-NSA-NRCELLDU-" +
+                                properties.get(source + ".id") + "-*-" + ymd + nms + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
                         logger.error("SFTP操作异常：" + e.getMessage());
@@ -930,13 +935,15 @@ public class HandleGnbsNsaDuThread implements Runnable {
                             fileName + ".gz", path + fileName + ".gz");
                 }
             } else {
-                logger.info("获取：" + nowTime + "/PM-GNB-NSA-NRCELLDU-" +
-                        properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz");
+                ymd=nowTime;
+                nms=TimeMm;
+                logger.info("获取：" + ymd + "/PM-GNB-NSA-NRCELLDU-" +
+                        properties.get(source + ".id") + "-*-" + ymd + nms + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                nowTime + "/PM-GNB-NSA-NRCELLDU-" +
-                                properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").toString();
+                                ymd + "/PM-GNB-NSA-NRCELLDU-" +
+                                properties.get(source + ".id") + "-*-" + ymd + nms + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
                         logger.error("SFTP操作异常：" + e.getMessage());
@@ -1077,9 +1084,7 @@ public class HandleGnbsNsaDuThread implements Runnable {
                                             if (!reader.get(getPHY_ULMeanNL_PRBPosition(i)).isEmpty() && Integer.parseInt(reader.get(getPHY_ULMeanNL_PRBPosition(i))) > -110) {
                                                 logger.info("PHY_ULMeanNL_PRB指标修正 当前:" + reader.get(2));
                                                 logger.info("PHY_ULMeanNL_PRB指标 当前:" + reader.get(getPHY_ULMeanNL_PRBPosition(i)));
-                                                int min1 = 114, max1 = 116;
-                                                int rd1 = 0 - (min1 + (int) (Math.random() * ((max1 - min1) + 1)));
-                                                stringList[getPHY_ULMeanNL_PRBPosition(i)] = String.valueOf(rd1);
+                                                stringList[getPHY_ULMeanNL_PRBPosition(i)] = String.valueOf((reader.get(2).length()+i+Integer.parseInt(ymd)+(Integer.parseInt(nms.substring(0,2))/15))% 5-117);
                                                 logger.info("PHY_ULMeanNL_PRB指标 修改后:" + stringList[getPHY_ULMeanNL_PRBPosition(i)]);
                                             }
                                         }
