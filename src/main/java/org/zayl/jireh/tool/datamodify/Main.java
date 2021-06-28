@@ -1,6 +1,7 @@
 package org.zayl.jireh.tool.datamodify;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.jcraft.jsch.ChannelSftp;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -9,10 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zayl.jireh.tool.datamodify.model.HandleGnbSaCuThread;
 import org.zayl.jireh.tool.datamodify.model.HandleGnbSaDuThread;
 import org.zayl.jireh.tool.datamodify.model.HandleGnbsNsaDuThread;
-import org.zayl.jireh.tool.datamodify.util.JDBCSSHChannel;
-import org.zayl.jireh.tool.datamodify.util.PropertiesConfigs;
-import org.zayl.jireh.tool.datamodify.util.RemoteShellExecutor;
-import org.zayl.jireh.tool.datamodify.util.SftpUtilM;
+import org.zayl.jireh.tool.datamodify.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,23 +62,41 @@ public class Main {
                 extractedType1();
                 break;
             case 1:
-                JDBCSSHChannel.goSSH(22, "10.212.114.156", 22, "ossadm", "Zzwg-2020", "172.31.31.51", 22);
-                //JDBCSSHChannel.goSSH(32022, "192.168.5.101", 22, "root", "OOoo0000", "192.168.5.103", 3389);
-                Thread.sleep(981565445);
-//                Connection connection = RemoteShellExecutor.login("10.212.114.156", "ossadm", "Zzwg-2020");
-//                if (connection == null) {
-//                    logger.error("=======" + connection.getHostname() + "SSH connection error=======");
-//                } else {
-//                    try {
-//                        RemoteShellExecutor.exec(connection, "ssh dbuser@172.31.31.51 -tt");
-//                        RemoteShellExecutor.exec(connection, "Zzwg-2020");
-//                        RemoteShellExecutor.exec(connection, "zsql sys/Admin@123@127.0.0.1:32080");
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                logger.info("========SFTP登录========");
+                SftpUtil sftp = new SftpUtil(SFTP_USERNAME, SFTP_PASSWORD, SFTP_ADDRESS, SFTP_PORT);
+                sftp.login();
+                logger.info("======SFTP登录完成======");
+                logger.info("======清空下载路径======");
+                FileUtil.deleteDir(saveFilePath);
 
+                Vector<?> list;
+                HashMap<String, Integer> data = new HashMap<>();
+                try {
+                    list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/*");
+                    if (list.size() > 0) {
+                        for (Object o : list) {
+                            ChannelSftp.LsEntry lsEntry1 = (ChannelSftp.LsEntry) o;
+                            if (lsEntry1.getAttrs().isDir()) {
+                                data.put(((ChannelSftp.LsEntry) o).getFilename(), ((ChannelSftp.LsEntry) o).getAttrs().getMTime());
+                            }
+                        }
+
+                        data = sortByValue(data);
+                        for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                            String s = entry.getKey();
+                            list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/" + s + "/*.csv");
+                            if (list.size() > 0) {
+                                sftp.batchDownLoadFile(SFTP_DOWNLOAD_PATH+"/" + s + "/",
+                                        saveFilePath + File.separator, "", ".csv", false);
+                                break;
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    logger.warn(e.getMessage());
+                }
+                sftp.logout();
         }
 
         SftpUtilM.logoutList();
@@ -89,6 +105,15 @@ public class Main {
         //退出主进程
         logger.info("===========主程序结束===========");
         logger.info("本次耗时：" + (System.currentTimeMillis() - startTime) / 1000 + " (秒)");
+    }
+
+    public static <K, V extends Comparable<? super V>> HashMap<K, V> sortByValue(HashMap<K, V> map) {
+        HashMap<K, V> result = new LinkedHashMap<>();
+
+        map.entrySet().stream()
+                .sorted(HashMap.Entry.<K, V>comparingByValue()
+                        .reversed()).forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
+        return result;
     }
 
     private static void extractedType1() throws IOException, InterruptedException {
@@ -112,7 +137,7 @@ public class Main {
             int on4 = (int) sheetRow.getCell(5).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3+ "￥" + on4;
+            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3 + "￥" + on4;
 
             if (map.containsKey(source)) {
                 map.get(source).add(e);

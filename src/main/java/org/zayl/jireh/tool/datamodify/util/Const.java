@@ -40,6 +40,13 @@ public class Const {
 	public static String nowTime="";
 	public static String TimeMm="";
 
+	public static Integer SFTP_PORT=0;
+	public static String SFTP_USERNAME="";
+	public static String SFTP_PASSWORD="";
+	public static String SFTP_DOWNLOAD_PATH="";
+	public static String SFTP_ADDRESS="";
+
+
 
 
 	/**

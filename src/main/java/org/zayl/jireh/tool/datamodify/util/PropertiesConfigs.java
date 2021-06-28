@@ -98,6 +98,13 @@ public class PropertiesConfigs {
         Const.ForCount =Integer.parseInt(props.getProperty("ForCount"));
         Const.SleepTime =Integer.parseInt(props.getProperty("SleepTime"));
 
+        Const.SFTP_PORT =Integer.parseInt(props.getProperty("SFTP_PORT"));
+        Const.SFTP_PASSWORD =props.getProperty("SFTP_PASSWORD");
+        Const.SFTP_USERNAME =props.getProperty("SFTP_USERNAME");
+        Const.SFTP_ADDRESS =props.getProperty("SFTP_ADDRESS");
+        Const.SFTP_DOWNLOAD_PATH =props.getProperty("SFTP_DOWNLOAD_PATH");
+
+
     }
 
     public static void loadConf() throws Exception {
