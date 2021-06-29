@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datamodify.util;
+package org.zayl.jireh.tool.datahandle.util;
 
 import ch.ethz.ssh2.ChannelCondition;
 import ch.ethz.ssh2.Connection;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static org.zayl.jireh.tool.datamodify.util.Const.SSH_CONNECTION_POOL;
+import static org.zayl.jireh.tool.datahandle.util.Const.SSH_CONNECTION_POOL;
 
 /**
  * @author Jireh

@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datamodify.util;
+package org.zayl.jireh.tool.datahandle.util;
 
 public class MD4 {
 

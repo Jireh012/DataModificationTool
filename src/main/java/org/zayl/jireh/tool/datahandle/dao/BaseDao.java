@@ -1,11 +1,7 @@
-package org.zayl.jireh.tool.datamodify.dao;
-
-import com.huawei.gauss.util.Constant;
+package org.zayl.jireh.tool.datahandle.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BaseDao {

@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datamodify.util;
+package org.zayl.jireh.tool.datahandle.util;
 
 import com.jcraft.jsch.*;
 import org.apache.commons.io.IOUtils;
@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Vector;
 
-import static org.zayl.jireh.tool.datamodify.util.Const.*;
+import static org.zayl.jireh.tool.datahandle.util.Const.*;
 
 
 /**

@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datamodify.model;
+package org.zayl.jireh.tool.datahandle.model;
 
 import ch.ethz.ssh2.Connection;
 import com.csvreader.CsvReader;
@@ -6,7 +6,7 @@ import com.csvreader.CsvWriter;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import org.apache.log4j.Logger;
-import org.zayl.jireh.tool.datamodify.util.*;
+import org.zayl.jireh.tool.datahandle.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import static org.zayl.jireh.tool.datamodify.util.Const.*;
-import static org.zayl.jireh.tool.datamodify.util.FileUtil.isChartPathExist;
-import static org.zayl.jireh.tool.datamodify.util.Mathematical.StringToInt;
+import static org.zayl.jireh.tool.datahandle.util.Const.*;
+import static org.zayl.jireh.tool.datahandle.util.FileUtil.isChartPathExist;
 
 /**
  * @author last_
