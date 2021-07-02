@@ -1,5 +1,6 @@
 package org.zayl.jireh.tool.datahandle;
 
+import com.csvreader.CsvReader;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jcraft.jsch.ChannelSftp;
 import org.apache.log4j.Logger;
@@ -15,7 +16,10 @@ import org.zayl.jireh.tool.datahandle.util.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -51,52 +55,14 @@ public class Main {
             logger.error("读取配置异常" + e.getMessage());
         }
 
-        if (SOURCE_PRO == null) {
-            logger.warn("数据源异常，请检查sourceConfig是否被正确加载");
-            return;
-        }
-
         switch (type) {
             default:
             case 0:
-                extractedType1();
+                extractedType0();
                 break;
             case 1:
-                logger.info("========SFTP登录========");
-                SftpUtil sftp = new SftpUtil(SFTP_USERNAME, SFTP_PASSWORD, SFTP_ADDRESS, SFTP_PORT);
-                sftp.login();
-                logger.info("======SFTP登录完成======");
-                logger.info("======清空下载路径======");
-                FileUtil.deleteDir(saveFilePath);
-
-                Vector<?> list;
-                HashMap<String, Integer> data = new HashMap<>();
-                try {
-                    list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/*");
-                    if (list.size() > 0) {
-                        for (Object o : list) {
-                            ChannelSftp.LsEntry lsEntry1 = (ChannelSftp.LsEntry) o;
-                            if (lsEntry1.getAttrs().isDir()) {
-                                data.put(((ChannelSftp.LsEntry) o).getFilename(), ((ChannelSftp.LsEntry) o).getAttrs().getMTime());
-                            }
-                        }
-
-                        data = sortByValue(data);
-                        for (Map.Entry<String, Integer> entry : data.entrySet()) {
-                            String s = entry.getKey();
-                            list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/" + s + "/*.csv");
-                            if (list.size() > 0) {
-                                sftp.batchDownLoadFile(SFTP_DOWNLOAD_PATH+"/" + s + "/",
-                                        saveFilePath + File.separator, "", ".csv", false);
-                                break;
-                            }
-                        }
-                    }
-
-                } catch (Exception e) {
-                    logger.warn(e.getMessage());
-                }
-                sftp.logout();
+                extractedType1();
+                break;
         }
 
         SftpUtilM.logoutList();
@@ -107,16 +73,12 @@ public class Main {
         logger.info("本次耗时：" + (System.currentTimeMillis() - startTime) / 1000 + " (秒)");
     }
 
-    public static <K, V extends Comparable<? super V>> HashMap<K, V> sortByValue(HashMap<K, V> map) {
-        HashMap<K, V> result = new LinkedHashMap<>();
+    private static void extractedType0() throws IOException, InterruptedException {
+        if (SOURCE_PRO == null) {
+            logger.warn("数据源异常，请检查sourceConfig是否被正确加载");
+            return;
+        }
 
-        map.entrySet().stream()
-                .sorted(HashMap.Entry.<K, V>comparingByValue()
-                        .reversed()).forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
-        return result;
-    }
-
-    private static void extractedType1() throws IOException, InterruptedException {
         if (!"1".equals(TestModel)) {
             initTimeData();
         }
@@ -184,6 +146,92 @@ public class Main {
         executorService3.shutdown();
     }
 
+    private static void extractedType1() {
+        logger.info("========SFTP登录========");
+        SftpUtil sftp = new SftpUtil(SFTP_USERNAME, SFTP_PASSWORD, SFTP_ADDRESS, SFTP_PORT);
+        sftp.login();
+        logger.info("======SFTP登录完成======");
+        logger.info("======清空下载路径======");
+        FileUtil.deleteDir(saveFilePath);
+
+        Vector<?> list;
+        HashMap<String, Integer> data = new HashMap<>();
+        try {
+            list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/*");
+            if (list.size() > 0) {
+                for (Object o : list) {
+                    ChannelSftp.LsEntry lsEntry1 = (ChannelSftp.LsEntry) o;
+                    if (lsEntry1.getAttrs().isDir()) {
+                        data.put(((ChannelSftp.LsEntry) o).getFilename(), ((ChannelSftp.LsEntry) o).getAttrs().getMTime());
+                    }
+                }
+
+                data = MapUtil.sortByValue(data);
+                for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                    String s = entry.getKey();
+                    list = sftp.listFiles(SFTP_DOWNLOAD_PATH + "/" + s + "/*.csv");
+                    if (list.size() > 0) {
+                        sftp.batchDownLoadFile(SFTP_DOWNLOAD_PATH+"/" + s + "/",
+                                saveFilePath + File.separator, "", ".csv", false);
+                        break;
+                    }
+                }
+
+                sftp.logout();
+
+                logger.info("========初始化JDBC========");
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                Connection connection = DriverManager.getConnection("jdbc:sqlserver://192.168.5.103:1433;DatabaseName=MMS",
+                        "sa", "zhyw$zj123");
+                connection.setAutoCommit(false);
+                logger.info("========完成初始化JDBC========");
+
+                PreparedStatement cmd = connection.prepareStatement(
+                        "INSERT INTO 机框 " +
+                                "VALUES  (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+                File jikuang = new File(saveFilePath + File.separator + "机框.csv");
+                if (jikuang.exists()) {
+                    PreparedStatement delete = connection.prepareCall("truncate table 机框");
+                    delete.addBatch();
+                    delete.executeBatch();
+
+                    CsvReader reader = new CsvReader(jikuang.getPath(), ',', StandardCharsets.UTF_8);
+                    boolean isFirst = true;
+                    reader.readHeaders();
+                    // 读取每行的内容
+                    while (reader.readRecord()) {
+                        if (isFirst) {
+                            isFirst = false;
+                        } else {
+                            //每一行的值
+                            for (int i = 0; i < reader.getValues().length; i++) {
+                                cmd.setString(i + 1, reader.get(i));
+                            }
+                            if (saveFilePath.contains("5G")){
+                                cmd.setString(27, "5G");
+                            }else if (saveFilePath.contains("4G")){
+                                cmd.setString(27, "4G");
+                            }else {
+                                cmd.setString(27, "NONE");
+                            }
+                            cmd.addBatch();
+                        }
+                    }
+                    reader.close();
+                    cmd.executeBatch();
+                    connection.commit();
+                    connection.close();
+                } else {
+                    logger.warn("机框.csv 文件不存在");
+                }
+            }
+
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
     private static void initTimeData() {
         SimpleDateFormat mmFormat = new SimpleDateFormat("mm");
         int nowTimeMm = Integer.parseInt(mmFormat.format(new Date()));
@@ -206,96 +254,6 @@ public class Main {
                 nowTime = timeFormat.format(new Date(System.currentTimeMillis()));
             }
         }
-    }
-
-    /**
-     * 描述：对表格中数值进行格式化
-     *
-     * @param cell
-     * @return
-     */
-    public static Object getCellValue(XSSFCell cell) {
-        Object value = null;
-        DecimalFormat df = new DecimalFormat("0"); // 格式化number String字符
-        SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd"); // 日期格式化
-        DecimalFormat df2 = new DecimalFormat("0"); // 格式化数字
-
-        switch (cell.getCellType()) {
-            case STRING:
-                value = cell.getRichStringCellValue().getString();
-                break;
-            case NUMERIC:
-                if ("General".equals(cell.getCellStyle().getDataFormatString())) {
-                    value = df.format(cell.getNumericCellValue());
-                } else if ("m/d/yy".equals(cell.getCellStyle().getDataFormatString())) {
-                    value = sdf.format(cell.getDateCellValue());
-                } else {
-                    value = df2.format(cell.getNumericCellValue());
-                }
-                break;
-            case BOOLEAN:
-                value = cell.getBooleanCellValue();
-                break;
-            case BLANK:
-                value = "";
-                break;
-            default:
-                break;
-        }
-        return value;
-    }
-
-    public static List<Map<String, Object>> getXls(XSSFWorkbook workbook) {
-        // 返回数据
-        List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();
-        XSSFRow row = null;
-        XSSFCell cell = null;
-        XSSFSheet sheet1 = null;
-        // 遍历Excel中所有的sheet
-        Map<String, String> m2 = new HashMap<String, String>();
-        m2.put("sourceAddress", "sourceAddress");
-        m2.put("aims", "aims");
-        m2.put("type1", "type1");
-        m2.put("PdschPrbAssn", "PdschPrbAssn");
-        m2.put("PuschPrbAssn", "PuschPrbAssn");
-        m2.put("NbrCqi", "NbrCqi");
-        m2.put("ULMeanNL", "ULMeanNL");
-
-        // 遍历Excel中所有的sheet
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            sheet1 = workbook.getSheetAt(i);
-            if (sheet1 == null) {
-                continue;
-            }
-
-            // 取第一行标题
-            row = sheet1.getRow(0);
-            String[] title = null;
-            if (row != null) {
-                title = new String[row.getLastCellNum()];
-                for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
-                    cell = row.getCell(y);
-                    title[y] = (String) getCellValue(cell);
-                }
-            } else {
-                continue;
-            }
-
-            // 遍历当前sheet中的所有行
-            for (int j = 1; j < sheet1.getLastRowNum() + 1; j++) {
-                row = sheet1.getRow(j);
-                Map<String, Object> m = new HashMap<String, Object>();
-                // 遍历所有的列
-                for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
-                    cell = row.getCell(y);
-                    String key = title[y];
-                    m.put(m2.get(key), getCellValue(cell));
-                }
-                ls.add(m);
-            }
-
-        }
-        return ls;
     }
 
 }
