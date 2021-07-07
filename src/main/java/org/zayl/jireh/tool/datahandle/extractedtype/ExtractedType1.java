@@ -78,23 +78,20 @@ public class ExtractedType1 {
                         "sa", "zhyw$zj123");
                 connection.setAutoCommit(false);
                 logger.info("========完成初始化JDBC========");
-
-                PreparedStatement cmd = connection.prepareStatement(
-                        "INSERT INTO 机框 " +
-                                "VALUES  (?,?,?,?)");
-
-                String type;
-
-                if (saveFilePath.contains("5G")) {
-                    type = "5G";
-                } else if (saveFilePath.contains("4G")) {
-                    type = "4G";
-                } else {
-                    type = "NONE";
-                }
-
                 File jikuang = new File(saveFilePath + File.separator + "机框.csv");
                 if (jikuang.exists()) {
+                    PreparedStatement cmd = connection.prepareStatement(
+                            "INSERT INTO 机框 " +
+                                    "VALUES  (?,?,?,?)");
+
+                    String type;
+                    if (saveFilePath.contains("5G")) {
+                        type = "5G";
+                    } else if (saveFilePath.contains("4G")) {
+                        type = "4G";
+                    } else {
+                        type = "NONE";
+                    }
 
                     PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '" + type + "'");
                     delete.addBatch();
