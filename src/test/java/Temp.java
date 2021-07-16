@@ -1,10 +1,27 @@
+import com.csvreader.CsvReader;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 public class Temp {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
 
-        for (int i = 0; i <= 272; i++) {
-            String str1 = "瑞安牛伏岭NR_2";
-            System.out.println((str1.length()+i+20210617+(Integer.parseInt("4500".substring(0,2))/15))% 5-117);
+        CsvReader reader = new CsvReader("C:\\Users\\Administrator\\Desktop\\test-save\\机框.csv", ',', StandardCharsets.UTF_8);
+        boolean isFirst = true;
+        //reader.readHeaders();
+        // 读取每行的内容
+        while (reader.readRecord()) {
+            if (isFirst) {
+                isFirst = false;
+                int i = 0;
+                while (i < reader.getValues().length) {
+
+                    System.out.println(reader.get(i));
+                    i++;
+                }
+            }
         }
+        reader.close();
     }
 }

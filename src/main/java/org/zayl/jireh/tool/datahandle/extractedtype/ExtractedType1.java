@@ -99,18 +99,19 @@ public class ExtractedType1 {
 
                     CsvReader reader = new CsvReader(jikuang.getPath(), ',', StandardCharsets.UTF_8);
                     boolean isFirst = true;
-                    reader.readHeaders();
                     // 读取每行的内容
                     while (reader.readRecord()) {
                         if (isFirst) {
                             isFirst = false;
                             initDataPosition(reader);
                         } else {
-                            cmd.setString(1, reader.get(INDEX_网元名称));
-                            cmd.setString(2, reader.get(INDEX_机框类型));
-                            cmd.setString(3, reader.get(INDEX_资产序列号));
-                            cmd.setString(4, type);
-                            cmd.addBatch();
+                            if (!reader.get(INDEX_资产序列号).isEmpty()){
+                                cmd.setString(1, reader.get(INDEX_网元名称));
+                                cmd.setString(2, reader.get(INDEX_机框类型));
+                                cmd.setString(3, reader.get(INDEX_资产序列号));
+                                cmd.setString(4, type);
+                                cmd.addBatch();
+                            }
                         }
                     }
                     reader.close();
