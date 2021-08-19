@@ -3,6 +3,7 @@ package org.zayl.jireh.tool.datahandle;
 import org.apache.log4j.Logger;
 import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType0;
 import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType1;
+import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType2;
 import org.zayl.jireh.tool.datahandle.util.PropertiesConfigs;
 import org.zayl.jireh.tool.datahandle.util.RemoteShellExecutor;
 import org.zayl.jireh.tool.datahandle.util.SftpUtilM;
@@ -43,6 +44,9 @@ public class Main {
             case 1:
                 ExtractedType1.run();
                 break;
+            case 2:
+                ExtractedType2.run();
+                break;
         }
 
         SftpUtilM.logoutList();
@@ -52,7 +56,5 @@ public class Main {
         logger.info("===========主程序结束===========");
         logger.info("本次耗时：" + (System.currentTimeMillis() - startTime) / 1000 + " (秒)");
     }
-
-
 
 }
