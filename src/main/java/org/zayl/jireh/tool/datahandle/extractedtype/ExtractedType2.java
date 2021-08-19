@@ -44,14 +44,17 @@ public class ExtractedType2 {
             logger.info("========完成初始化JDBC========");
             File subrack4G = new File(saveFilePath + File.separator + "DIM_eNodeB_Subrack.csv");
             File subrack5G = new File(saveFilePath + File.separator + "DIM_BTS59005G_Subrack.csv");
-            if (subrack5G.exists()) {
-                PreparedStatement cmd = connection.prepareStatement(
-                        "INSERT INTO 机框 " +
-                                "VALUES  (?,?,?,?)");
+            File subrack = new File(saveFilePath + File.separator + "DIM_BTS5900_Subrack.csv");
+            PreparedStatement cmd = connection.prepareStatement(
+                    "INSERT INTO 机框 " +
+                            "VALUES  (?,?,?,?)");
+            boolean isDel= false;
 
+            if (subrack5G.exists()) {
                 PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '5G'");
                 delete.addBatch();
                 delete.executeBatch();
+                isDel=true;
 
                 CsvReader reader = new CsvReader(subrack5G.getPath(), ',', Charset.forName("GB2312"));
                 boolean isFirst = true;
@@ -77,11 +80,38 @@ public class ExtractedType2 {
                 logger.warn("5GSubrack.csv 文件不存在");
             }
 
-            if (subrack4G.exists()) {
-                PreparedStatement cmd = connection.prepareStatement(
-                        "INSERT INTO 机框 " +
-                                "VALUES  (?,?,?,?)");
+            if (subrack.exists()) {
+                if (!isDel){
+                    PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '5G'");
+                    delete.addBatch();
+                    delete.executeBatch();
+                }
 
+                CsvReader reader = new CsvReader(subrack.getPath(), ',', Charset.forName("GB2312"));
+                boolean isFirst = true;
+                // 读取每行的内容
+                while (reader.readRecord()) {
+                    if (isFirst) {
+                        isFirst = false;
+                        initDataPosition(reader);
+                    } else {
+                        if (!reader.get(INDEX_资产序列号).isEmpty()) {
+                            cmd.setString(1, reader.get(INDEX_网元名称));
+                            cmd.setString(2, reader.get(INDEX_机框类型));
+                            cmd.setString(3, reader.get(INDEX_资产序列号));
+                            cmd.setString(4, "5G");
+                            cmd.addBatch();
+                        }
+                    }
+                }
+                reader.close();
+                cmd.executeBatch();
+                connection.commit();
+            } else {
+                logger.warn("Subrack.csv 文件不存在");
+            }
+
+            if (subrack4G.exists()) {
                 PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '4G'");
                 delete.addBatch();
                 delete.executeBatch();

@@ -93,9 +93,9 @@ public class ExtractedType1 {
                         type = "NONE";
                     }
 
-                    PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '" + type + "'");
-                    delete.addBatch();
-                    delete.executeBatch();
+//                    PreparedStatement delete = connection.prepareCall("DELETE FROM 机框 where type = '" + type + "'");
+//                    delete.addBatch();
+//                    delete.executeBatch();
 
                     CsvReader reader = new CsvReader(jikuang.getPath(), ',', StandardCharsets.UTF_8);
                     boolean isFirst = true;
