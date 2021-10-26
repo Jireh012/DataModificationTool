@@ -31,6 +31,7 @@ public class ExtractedType2 {
         logger.info("======SFTP登录完成======");
         logger.info("======清空下载路径======");
         FileUtil.deleteDir(saveFilePath);
+        FileUtil.isChartPathExist(saveFilePath);
 
         try {
             sftp.batchDownLoadFile(SFTP_DOWNLOAD_PATH + "/",

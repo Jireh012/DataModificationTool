@@ -46,6 +46,7 @@ public class ExtractedType1 {
         logger.info("======SFTP登录完成======");
         logger.info("======清空下载路径======");
         FileUtil.deleteDir(saveFilePath);
+        FileUtil.isChartPathExist(saveFilePath);
 
         Vector<?> list;
         HashMap<String, Integer> data = new HashMap<>();
