@@ -24,7 +24,7 @@ public class ExtractedType2 {
     private static int INDEX_资产序列号 = 0;
 
 
-    public static void run() throws IOException, InterruptedException {
+    public static void run() {
         logger.info("========SFTP登录========");
         SftpUtil sftp = new SftpUtil(SFTP_USERNAME, SFTP_PASSWORD, SFTP_ADDRESS, SFTP_PORT);
         sftp.login();
