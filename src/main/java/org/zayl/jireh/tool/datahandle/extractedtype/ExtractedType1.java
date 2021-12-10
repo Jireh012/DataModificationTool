@@ -7,6 +7,7 @@ import org.zayl.jireh.tool.datahandle.util.SftpUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -58,7 +59,7 @@ public class ExtractedType1 {
                     type = "NONE";
                 }
 
-                CsvReader reader = new CsvReader(jikuang.getPath(), ',', StandardCharsets.UTF_8);
+                CsvReader reader = new CsvReader(jikuang.getPath(), ',', Charset.forName("GB2312"));
                 boolean isFirst = true;
                 // 读取每行的内容
                 while (reader.readRecord()) {

@@ -90,9 +90,9 @@
 
     <repositories>
         <repository>
-            <id>blade-release</id>
+            <id>nexus-zayl</id>
             <name>Release Repository</name>
-            <url>http://nexus.bladex.vip/repository/maven-releases/</url>
+            <url>https://nexus.ouhaihr.com/repository/maven-releases/</url>
         </repository>
         <repository>
             <id>aliyun-repos</id>
