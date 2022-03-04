@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType0;
 import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType1;
 import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType2;
+import org.zayl.jireh.tool.datahandle.extractedtype.ExtractedType3;
 import org.zayl.jireh.tool.datahandle.util.PropertiesConfigs;
 import org.zayl.jireh.tool.datahandle.util.RemoteShellExecutor;
 import org.zayl.jireh.tool.datahandle.util.SftpUtilM;
@@ -46,6 +47,9 @@ public class Main {
                 break;
             case 2:
                 ExtractedType2.run();
+                break;
+            case 3:
+                ExtractedType3.run();
                 break;
         }
 

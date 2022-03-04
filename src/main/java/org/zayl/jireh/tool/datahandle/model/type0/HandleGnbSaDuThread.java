@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datahandle.model;
+package org.zayl.jireh.tool.datahandle.model.type0;
 
 import ch.ethz.ssh2.Connection;
 import com.csvreader.CsvReader;

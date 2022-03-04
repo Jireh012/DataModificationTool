@@ -1,4 +1,4 @@
-package org.zayl.jireh.tool.datahandle.model;
+package org.zayl.jireh.tool.datahandle.model.type3;
 
 import ch.ethz.ssh2.Connection;
 import com.csvreader.CsvReader;
@@ -25,7 +25,9 @@ import static org.zayl.jireh.tool.datahandle.util.Mathematical.StringToInt;
 /**
  * @author last_
  */
-public class HandleGnbSaCuThread implements Runnable {
+public class HandleGnbSaLcupThread implements Runnable {
+
+    private static final String FILE_NAME ="PM-GNB-SA-NRCELLCUPHYSICAL";
 
     private static int FLOW_NBRFAILESTAB = 0;
     private static int FLOW_NBRFAILESTAB_CAUSETRANSPORT = 0;
@@ -43,9 +45,9 @@ public class HandleGnbSaCuThread implements Runnable {
     private final CountDownLatch threadsSignal;
     private final Map.Entry<String, List<String>> sourceData;
 
-    private final Logger logger = Logger.getLogger(HandleGnbSaCuThread.class);
+    private final Logger logger = Logger.getLogger(HandleGnbSaLcupThread.class);
 
-    public HandleGnbSaCuThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
+    public HandleGnbSaLcupThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
         this.threadsSignal = threadsSignal;
         this.sourceData = sourceData;
     }
@@ -118,12 +120,12 @@ public class HandleGnbSaCuThread implements Runnable {
             String str = null;
             long tttt = System.currentTimeMillis();
             if ("1".equals(TestModel)) {
-                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + TestDirNameYmDH + "/"+FILE_NAME+"-" +
                         properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                                TestDirNameYmDH + "/"+FILE_NAME+"-" +
                                 properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -150,7 +152,7 @@ public class HandleGnbSaCuThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") +
+                    fileName = ""+FILE_NAME+"-" + properties.get(source + ".id") +
                             "-" + verSion + "-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv";
                     logger.info("测试模式 文件名：" + fileName);
                     path = saveFilePath + TestDirNameYmDH + TestFileNameMMss + "_" + source + "_" + tttt + File.separator;
@@ -159,12 +161,12 @@ public class HandleGnbSaCuThread implements Runnable {
                             fileName + ".gz", path + fileName + ".gz");
                 }
             } else {
-                logger.info("获取：" + nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + nowTime + "/"+FILE_NAME+"-" +
                         properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                                nowTime + "/"+FILE_NAME+"-" +
                                 properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -192,7 +194,7 @@ public class HandleGnbSaCuThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") + "-" +
+                    fileName = ""+FILE_NAME+"-" + properties.get(source + ".id") + "-" +
                             verSion + "-" + nowTime + TimeMm + "-15.csv";
                     logger.info("正常模式 文件名：" + fileName);
                     path = saveFilePath + nowTime + TimeMm + "_" + source + "_" + tttt + File.separator;
@@ -246,15 +248,15 @@ public class HandleGnbSaCuThread implements Runnable {
                 long dalen;
                 if ("1".equals(TestModel)) {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                            TestDirNameYmDH + "/"+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info(""+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 } else {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                            nowTime + "/"+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info(""+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 }
             } catch (IOException e) {
