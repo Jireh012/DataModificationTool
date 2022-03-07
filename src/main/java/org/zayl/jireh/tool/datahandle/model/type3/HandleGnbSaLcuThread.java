@@ -336,13 +336,6 @@ public class HandleGnbSaLcuThread implements Runnable {
                                         stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE] = "0";
                                         logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
                                     }
-
-                                    if (on3 == 1) {
-                                        logger.info("RRC_SuccConnEstab 指标修正 before：" + reader.get(RRC_SuccConnEstab));
-                                        stringList[RRC_SuccConnEstab] = reader.get(RRC_ATTCONNESTAB);
-                                        logger.info("RRC_SuccConnEstab 指标修正 before：" + stringList[RRC_SuccConnEstab]);
-                                    }
-
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     logger.warn("aims: " + reader.get(2) + "\n源数据异常: " + e.getMessage());
