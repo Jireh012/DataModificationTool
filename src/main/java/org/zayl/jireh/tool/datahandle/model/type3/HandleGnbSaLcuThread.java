@@ -38,6 +38,14 @@ public class HandleGnbSaLcuThread implements Runnable {
     private static int CONTEXT_ATTRELGNB_UELOST = 0;
     private static int CONTEXT_ATTRELGNB_NORMAL = 0;
     private static int CONTEXT_ATTRELGNB = 0;
+    private static int HO_SUCCOUTINTRADU = 0;
+    private static int HO_ATTOUTCUINTRADU = 0;
+    private static int HO_SUCCOUTINTERCUNG = 0;
+    private static int HO_ATTOUTINTERCUNG = 0;
+    private static int HO_SUCCOUTINTERCUXN = 0;
+    private static int HO_ATTOUTINTERCUXN = 0;
+    private static int HO_SUCCOUTINTRACUINTERDU = 0;
+    private static int HO_ATTOUTINTRACUINTERDU = 0;
 
 
     private final CountDownLatch threadsSignal;
@@ -55,6 +63,30 @@ public class HandleGnbSaLcuThread implements Runnable {
         //初始化相关列位置
         while (i < reader.getValues().length) {
             switch (reader.get(i)) {
+                case "HO.SuccOutIntraDU":
+                    HO_SUCCOUTINTRADU = i;
+                    break;
+                case "HO.AttOutCUIntraDU":
+                    HO_ATTOUTCUINTRADU = i;
+                    break;
+                case "HO.SuccOutInterCuNG":
+                    HO_SUCCOUTINTERCUNG = i;
+                    break;
+                case "HO.AttOutInterCuNG":
+                    HO_ATTOUTINTERCUNG = i;
+                    break;
+                case "HO.SuccOutInterCuXn":
+                    HO_SUCCOUTINTERCUXN = i;
+                    break;
+                case "HO.AttOutInterCuXn":
+                    HO_ATTOUTINTERCUXN = i;
+                    break;
+                case "HO.SuccOutIntraCUInterDU":
+                    HO_SUCCOUTINTRACUINTERDU = i;
+                    break;
+                case "HO.AttOutIntraCUInterDU":
+                    HO_ATTOUTINTRACUINTERDU = i;
+                    break;
                 case "CONTEXT.AttRelgNB":
                     CONTEXT_ATTRELGNB = i;
                     break;
@@ -300,7 +332,7 @@ public class HandleGnbSaLcuThread implements Runnable {
                             if (reader.get(Integer.parseInt(Const.aimsType)).equals(li.split("￥")[1])) {
                                 int on1 = Integer.parseInt(li.split("￥")[2]);
                                 int on2 = Integer.parseInt(li.split("￥")[3]);
-                                int on3 = Integer.parseInt(li.split("￥")[4]);
+                                int on4 = Integer.parseInt(li.split("￥")[5]);
 
                                 try {
                                     if (on1 == 1) {
@@ -318,24 +350,43 @@ public class HandleGnbSaLcuThread implements Runnable {
                                     if (on2 == 1) {
                                         logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + reader.get(FLOW_NBRSUCCESTAB));
                                         stringList[FLOW_NBRSUCCESTAB] = reader.get(FLOW_NBRATTESTAB);
-                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + stringList[FLOW_NBRSUCCESTAB]);
+                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 after：" + stringList[FLOW_NBRSUCCESTAB]);
 
                                         logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB));
                                         stringList[FLOW_NBRFAILESTAB] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + stringList[FLOW_NBRFAILESTAB]);
+                                        logger.info("FLOW_NBRFAILESTAB 指标修正 after：" + stringList[FLOW_NBRFAILESTAB]);
 
                                         logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSETRANSPORT));
                                         stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT]);
+                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT]);
 
                                         logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE));
                                         stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE]);
+                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE]);
 
                                         logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE));
                                         stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
+                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
                                     }
+
+                                    if (on4 == 1) {
+                                        logger.info("HO.SuccOutIntraDU 指标修正 before：" + reader.get(HO_SUCCOUTINTRADU));
+                                        stringList[HO_SUCCOUTINTRADU] = reader.get(HO_ATTOUTCUINTRADU);
+                                        logger.info("HO.SuccOutIntraDU 指标修正 after：" +  stringList[HO_SUCCOUTINTRADU]);
+
+                                        logger.info("HO_SUCCOUTINTERCUNG 指标修正 before：" + stringList[HO_SUCCOUTINTERCUNG]);
+                                        stringList[HO_SUCCOUTINTERCUNG] = reader.get(HO_ATTOUTINTERCUNG);
+                                        logger.info("HO_SUCCOUTINTERCUNG 指标修正 after：" +  stringList[HO_SUCCOUTINTERCUNG]);
+
+                                        logger.info("HO_SUCCOUTINTERCUXN 指标修正 before：" + reader.get(HO_SUCCOUTINTERCUXN));
+                                        stringList[HO_SUCCOUTINTERCUXN] =  reader.get(HO_ATTOUTINTERCUXN);
+                                        logger.info("HO_SUCCOUTINTERCUXN 指标修正 after：" +  stringList[HO_SUCCOUTINTERCUXN]);
+
+                                        logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 before：" + reader.get(HO_SUCCOUTINTRACUINTERDU));
+                                        stringList[HO_SUCCOUTINTRACUINTERDU] = reader.get(HO_ATTOUTINTRACUINTERDU);
+                                        logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 after：" +  stringList[HO_SUCCOUTINTRACUINTERDU]);
+                                    }
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     logger.warn("aims: " + reader.get(2) + "\n源数据异常: " + e.getMessage());
