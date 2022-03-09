@@ -1,10 +1,7 @@
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import model.omc_data_modify.ConnEstabThread;
-import model.omc_data_modify.CoverEstabThread;
-import model.omc_data_modify.SourceLteThread;
-import model.omc_data_modify.SourceThread;
+import model.omc_data_modify.*;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -36,6 +33,10 @@ public class Main {
             } else {
                 PropertiesConfigs.loadConf(args[0]);
                 PropertiesConfigs.loadSource(args[1]);
+            }
+
+            if (args[2] == null){
+                throw new Exception("启动类型为空");
             }
         } catch (Exception e) {
             //读取配置异常
@@ -105,51 +106,71 @@ public class Main {
 
         int threadNum = map.size();
         int threadNum2 = map2.size();
-        CountDownLatch threadSignal1 = new CountDownLatch(threadNum);
-        CountDownLatch threadSignalLte = new CountDownLatch(threadNum);
-        CountDownLatch threadSignal2 = new CountDownLatch(threadNum2);
-        CountDownLatch threadSignal3 = new CountDownLatch(threadNum2);
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("enmbx-pool-%d").setDaemon(true).build();
-        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(threadNum,
-                threadFactory);
-        ScheduledExecutorService executorService2 = new ScheduledThreadPoolExecutor(threadNum2,
-                threadFactory);
-        ScheduledExecutorService executorService3 = new ScheduledThreadPoolExecutor(threadNum2,
-                threadFactory);
-        ScheduledExecutorService executorServiceLte = new ScheduledThreadPoolExecutor(threadNum,
-                threadFactory);
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            Runnable task = new SourceThread(threadSignal1, entry);
-            // 执行
-            executorService.execute(task);
-            Runnable taskLte = new SourceLteThread(threadSignalLte, entry);
-            // 执行
-            executorServiceLte.execute(taskLte);
+
+        switch (args[2]){
+            case "1":
+                CountDownLatch threadSignal1 = new CountDownLatch(threadNum);
+                CountDownLatch threadSignalLte = new CountDownLatch(threadNum);
+                CountDownLatch threadSignal2 = new CountDownLatch(threadNum2);
+                CountDownLatch threadSignal3 = new CountDownLatch(threadNum2);
+                ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                        .setNameFormat("enmbx-pool-%d").setDaemon(true).build();
+                ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(threadNum,
+                        threadFactory);
+                ScheduledExecutorService executorService2 = new ScheduledThreadPoolExecutor(threadNum2,
+                        threadFactory);
+                ScheduledExecutorService executorService3 = new ScheduledThreadPoolExecutor(threadNum2,
+                        threadFactory);
+                ScheduledExecutorService executorServiceLte = new ScheduledThreadPoolExecutor(threadNum,
+                        threadFactory);
+                for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                    Runnable task = new SourceThread(threadSignal1, entry);
+                    // 执行
+                    executorService.execute(task);
+                    Runnable taskLte = new SourceLteThread(threadSignalLte, entry);
+                    // 执行
+                    executorServiceLte.execute(taskLte);
+                }
+
+                for (Map.Entry<String, List<String>> entry : map2.entrySet()) {
+                    Runnable task = new ConnEstabThread(threadSignal2, entry);
+                    // 执行
+                    executorService2.execute(task);
+
+                    Runnable task1 = new CoverEstabThread(threadSignal3, entry);
+                    // 执行
+                    executorService3.execute(task1);
+                }
+
+                // 等待所有子线程执行完
+                threadSignal1.await();
+                threadSignal2.await();
+                threadSignal3.await();
+                threadSignalLte.await();
+                //固定线程池执行完成后 将释放掉资源 退出主进程
+                //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
+                executorService.shutdown();
+                executorService2.shutdown();
+                executorService3.shutdown();
+                executorServiceLte.shutdown();
+                break;
+            case "2":
+                CountDownLatch threadSignalTest2 = new CountDownLatch(threadNum);
+                ThreadFactory threadFactoryTest2 = new ThreadFactoryBuilder()
+                        .setNameFormat("enmbx-pool-%d").setDaemon(true).build();
+                ScheduledExecutorService executorServiceTest2 = new ScheduledThreadPoolExecutor(threadNum,
+                        threadFactoryTest2);
+                for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                    Runnable task = new DeleteThread(threadSignalTest2, entry);
+                    // 执行
+                    executorServiceTest2.execute(task);
+                }
+                threadSignalTest2.await();
+                executorServiceTest2.shutdown();
+                break;
+            default:
+
         }
-
-        for (Map.Entry<String, List<String>> entry : map2.entrySet()) {
-            Runnable task = new ConnEstabThread(threadSignal2, entry);
-            // 执行
-            executorService2.execute(task);
-
-            Runnable task1 = new CoverEstabThread(threadSignal3, entry);
-            // 执行
-            executorService3.execute(task1);
-        }
-
-        // 等待所有子线程执行完
-        threadSignal1.await();
-        threadSignal2.await();
-        threadSignal3.await();
-        threadSignalLte.await();
-        //固定线程池执行完成后 将释放掉资源 退出主进程
-        //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
-        executorService.shutdown();
-        executorService2.shutdown();
-        executorService3.shutdown();
-        executorServiceLte.shutdown();
-
         SftpUtilM.logoutList();
         // do work end
         //退出主进程

@@ -747,7 +747,7 @@ public class SourceLteThread implements Runnable {
                                                 logger.info("ULMeanNL指标修正 当前:" + reader.get(2));
                                                 logger.info("ULMeanNL指标 当前:" + reader.get(getPHYULMeanNLPRBPosition(i)));
                                                 int min1 = 114, max1 = 118;
-                                                int rd1 = 0 - (min1 + (int) (Math.random() * ((max1 - min1) + 1)));
+                                                int rd1 = -(min1 + (int) (Math.random() * ((max1 - min1) + 1)));
                                                 stringList[getPHYULMeanNLPRBPosition(i)] = String.valueOf(rd1);
                                                 logger.info("ULMeanNL指标 修改后:" + stringList[getPHYULMeanNLPRBPosition(i)]);
                                             }
