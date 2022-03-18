@@ -20,40 +20,25 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.zayl.jireh.tool.datahandle.util.Const.*;
 import static org.zayl.jireh.tool.datahandle.util.FileUtil.isChartPathExist;
-import static org.zayl.jireh.tool.datahandle.util.Mathematical.StringToInt;
 
 /**
- * @author Jireh
+ * @author last_
  */
-public class HandleGnbSaLcuThread implements Runnable {
+public class HandleGnbSaLduThread implements Runnable {
 
-    private static int FLOW_NBRFAILESTAB = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSETRANSPORT = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = 0;
-    private static int FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = 0;
-    private static int RRC_ATTCONNESTAB = 0;
-    private static int FLOW_NBRSUCCESTAB = 0;
-    private static int FLOW_NBRATTESTAB = 0;
-    private static int RRC_SuccConnEstab = 0;
-    private static int CONTEXT_ATTRELGNB_UELOST = 0;
-    private static int CONTEXT_ATTRELGNB_NORMAL = 0;
-    private static int CONTEXT_ATTRELGNB = 0;
-    private static int HO_SUCCOUTINTRADU = 0;
-    private static int HO_ATTOUTCUINTRADU = 0;
-    private static int HO_SUCCOUTINTERCUNG = 0;
-    private static int HO_ATTOUTINTERCUNG = 0;
-    private static int HO_SUCCOUTINTERCUXN = 0;
-    private static int HO_ATTOUTINTERCUXN = 0;
-    private static int HO_SUCCOUTINTRACUINTERDU = 0;
-    private static int HO_ATTOUTINTRACUINTERDU = 0;
+    private static final String FILE_NAME ="PM-GNB-SA-NRCELLDU";
+
+    private static int RLC_UPOCTDL = 0;
+    private static int RLC_UPLASTTTIOCTDL = 0;
+    private static int RLC_THRPTIMEDL = 0;
 
 
     private final CountDownLatch threadsSignal;
     private final Map.Entry<String, List<String>> sourceData;
 
-    private final Logger logger = Logger.getLogger(HandleGnbSaLcuThread.class);
+    private final Logger logger = Logger.getLogger(HandleGnbSaLduThread.class);
 
-    public HandleGnbSaLcuThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
+    public HandleGnbSaLduThread(CountDownLatch threadsSignal, Map.Entry<String, List<String>> sourceData) {
         this.threadsSignal = threadsSignal;
         this.sourceData = sourceData;
     }
@@ -63,62 +48,14 @@ public class HandleGnbSaLcuThread implements Runnable {
         //初始化相关列位置
         while (i < reader.getValues().length) {
             switch (reader.get(i)) {
-                case "HO.SuccOutIntraDU":
-                    HO_SUCCOUTINTRADU = i;
+                case "RLC.UpLastTtiOctDl":
+                    RLC_UPLASTTTIOCTDL = i;
                     break;
-                case "HO.AttOutCUIntraDU":
-                    HO_ATTOUTCUINTRADU = i;
+                case "RLC.UpOctDl":
+                    RLC_UPOCTDL = i;
                     break;
-                case "HO.SuccOutInterCuNG":
-                    HO_SUCCOUTINTERCUNG = i;
-                    break;
-                case "HO.AttOutInterCuNG":
-                    HO_ATTOUTINTERCUNG = i;
-                    break;
-                case "HO.SuccOutInterCuXn":
-                    HO_SUCCOUTINTERCUXN = i;
-                    break;
-                case "HO.AttOutInterCuXn":
-                    HO_ATTOUTINTERCUXN = i;
-                    break;
-                case "HO.SuccOutIntraCUInterDU":
-                    HO_SUCCOUTINTRACUINTERDU = i;
-                    break;
-                case "HO.AttOutIntraCUInterDU":
-                    HO_ATTOUTINTRACUINTERDU = i;
-                    break;
-                case "CONTEXT.AttRelgNB":
-                    CONTEXT_ATTRELGNB = i;
-                    break;
-                case "CONTEXT.AttRelgNB.Normal":
-                    CONTEXT_ATTRELGNB_NORMAL = i;
-                    break;
-                case "CONTEXT.AttRelgNB.UeLost":
-                    CONTEXT_ATTRELGNB_UELOST = i;
-                    break;
-                case "Flow.NbrAttEstab":
-                    FLOW_NBRATTESTAB = i;
-                    break;
-                case "Flow.NbrSuccEstab":
-                    FLOW_NBRSUCCESTAB = i;
-                    break;
-                case "Flow.NbrFailEstab":
-                    FLOW_NBRFAILESTAB = i;
-                    break;
-                case "Flow.NbrFailEstab.CauseTransport":
-                    FLOW_NBRFAILESTAB_CAUSETRANSPORT = i;
-                    break;
-                case "Flow.NbrFailEstab.CauseRadioResourcesNotAvailable":
-                    FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = i;
-                    break;
-                case "Flow.NbrFailEstab.CauseFailureInRadioInterfaceProcedure":
-                    FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE = i;
-                    break;
-                case "RRC.AttConnEstab":
-                    RRC_ATTCONNESTAB = i;
-                    break;
-                case "RRC.SuccConnEstab":
-                    RRC_SuccConnEstab = i;
+                case "RLC.ThrpTimeDL":
+                    RLC_THRPTIMEDL = i;
                     break;
                 default:
                     break;
@@ -150,12 +87,12 @@ public class HandleGnbSaLcuThread implements Runnable {
             String str = null;
             long tttt = System.currentTimeMillis();
             if ("1".equals(TestModel)) {
-                logger.info("获取：" + TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + TestDirNameYmDH + "/"+FILE_NAME+"-" +
                         properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                                TestDirNameYmDH + "/"+FILE_NAME+"-" +
                                 properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -182,7 +119,7 @@ public class HandleGnbSaLcuThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") +
+                    fileName = ""+FILE_NAME+"-" + properties.get(source + ".id") +
                             "-" + verSion + "-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv";
                     logger.info("测试模式 文件名：" + fileName);
                     path = saveFilePath + TestDirNameYmDH + TestFileNameMMss + "_" + source + "_" + tttt + File.separator;
@@ -191,12 +128,12 @@ public class HandleGnbSaLcuThread implements Runnable {
                             fileName + ".gz", path + fileName + ".gz");
                 }
             } else {
-                logger.info("获取：" + nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                logger.info("获取：" + nowTime + "/"+FILE_NAME+"-" +
                         properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz");
                 for (int t1 = 1; t1 <= ForCount; t1++) {
                     try {
                         str = SftpUtilM.listFiles(sftp, properties.get(source + ".path") + "/" +
-                                nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                                nowTime + "/"+FILE_NAME+"-" +
                                 properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").toString();
                     } catch (SftpException e) {
                         e.printStackTrace();
@@ -224,7 +161,7 @@ public class HandleGnbSaLcuThread implements Runnable {
                     return;
                 } else {
                     String verSion = str.substring(str.indexOf("V"), str.indexOf("V") + 6);
-                    fileName = "PM-GNB-SA-NRCELLCU-" + properties.get(source + ".id") + "-" +
+                    fileName = ""+FILE_NAME+"-" + properties.get(source + ".id") + "-" +
                             verSion + "-" + nowTime + TimeMm + "-15.csv";
                     logger.info("正常模式 文件名：" + fileName);
                     path = saveFilePath + nowTime + TimeMm + "_" + source + "_" + tttt + File.separator;
@@ -278,15 +215,15 @@ public class HandleGnbSaLcuThread implements Runnable {
                 long dalen;
                 if ("1".equals(TestModel)) {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            TestDirNameYmDH + "/PM-GNB-SA-NRCELLCU-" +
+                            TestDirNameYmDH + "/"+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info(""+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + TestDirNameYmDH + TestFileNameMMss + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 } else {
                     dalen = SftpUtilM.listFiles1(sftp, properties.get(source + ".path") + "/" +
-                            nowTime + "/PM-GNB-SA-NRCELLCU-" +
+                            nowTime + "/"+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz").getSize();
-                    logger.info("PM-GNB-SA-NRCELLCU-" +
+                    logger.info(""+FILE_NAME+"-" +
                             properties.get(source + ".id") + "-*-" + nowTime + TimeMm + "-15.csv.gz  修改后FTP文件大小为：" + dalen);
                 }
             } catch (IOException e) {
@@ -330,61 +267,19 @@ public class HandleGnbSaLcuThread implements Runnable {
                     if (value.toString().contains(reader.get(Integer.parseInt(Const.aimsType)))) {
                         for (String li : value) {
                             if (reader.get(Integer.parseInt(Const.aimsType)).equals(li.split("￥")[1])) {
-                                int on1 = Integer.parseInt(li.split("￥")[2]);
-                                int on2 = Integer.parseInt(li.split("￥")[3]);
-                                int on4 = Integer.parseInt(li.split("￥")[5]);
+                                int on5 = Integer.parseInt(li.split("￥")[6]);
 
                                 try {
-                                    if (on1 == 1) {
-                                        logger.info("指标修正 当前：" + reader.get(2));
-                                        int contextAttrelgnbUelostValue = StringToInt(reader.get(CONTEXT_ATTRELGNB_UELOST));
-                                        if (contextAttrelgnbUelostValue > 0) {
-                                            logger.info("CONTEXT_ATTRELGNB_UELOST指标 before：" + contextAttrelgnbUelostValue);
-                                            stringList[CONTEXT_ATTRELGNB_UELOST] = "0";
+                                    if (on5 == 1) {
+                                        float rlc = Float.parseFloat(reader.get(RLC_THRPTIMEDL));
+                                        float v1 = Float.parseFloat(reader.get(RLC_UPOCTDL)) - Float.parseFloat(reader.get(RLC_UPLASTTTIOCTDL));
+                                        float v2 = v1 * 8 / rlc;
+
+                                        if (rlc > 2 && v2 < 100) {
+                                            logger.info("RLC_THRPTIMEDL 指标修正 before：" + reader.get(RLC_THRPTIMEDL));
+                                            stringList[RLC_THRPTIMEDL] = String.valueOf((int) (rlc / 2));
+                                            logger.info("RLC_THRPTIMEDL 指标修正 after：" + stringList[RLC_THRPTIMEDL]);
                                         }
-                                        logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 before：" + reader.get(CONTEXT_ATTRELGNB));
-                                        stringList[CONTEXT_ATTRELGNB_NORMAL] = reader.get(CONTEXT_ATTRELGNB);
-                                        logger.info("CONTEXT_ATTRELGNB_NORMAL指标修正 after：" + stringList[CONTEXT_ATTRELGNB_NORMAL]);
-                                    }
-
-                                    if (on2 == 1) {
-                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 before：" + reader.get(FLOW_NBRSUCCESTAB));
-                                        stringList[FLOW_NBRSUCCESTAB] = reader.get(FLOW_NBRATTESTAB);
-                                        logger.info("FLOW_NBRSUCCESTAB 指标修正 after：" + stringList[FLOW_NBRSUCCESTAB]);
-
-                                        logger.info("FLOW_NBRFAILESTAB 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB));
-                                        stringList[FLOW_NBRFAILESTAB] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB 指标修正 after：" + stringList[FLOW_NBRFAILESTAB]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSETRANSPORT));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSETRANSPORT 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSETRANSPORT]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE]);
-
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 before：" + reader.get(FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE));
-                                        stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE] = "0";
-                                        logger.info("FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE 指标修正 after：" + stringList[FLOW_NBRFAILESTAB_CAUSEFAILUREINRADIOINTERFACEPROCEDURE]);
-                                    }
-
-                                    if (on4 == 1) {
-                                        logger.info("HO.SuccOutIntraDU 指标修正 before：" + reader.get(HO_SUCCOUTINTRADU));
-                                        stringList[HO_SUCCOUTINTRADU] = reader.get(HO_ATTOUTCUINTRADU);
-                                        logger.info("HO.SuccOutIntraDU 指标修正 after：" + stringList[HO_SUCCOUTINTRADU]);
-
-                                        logger.info("HO_SUCCOUTINTERCUNG 指标修正 before：" + stringList[HO_SUCCOUTINTERCUNG]);
-                                        stringList[HO_SUCCOUTINTERCUNG] = reader.get(HO_ATTOUTINTERCUNG);
-                                        logger.info("HO_SUCCOUTINTERCUNG 指标修正 after：" + stringList[HO_SUCCOUTINTERCUNG]);
-
-                                        logger.info("HO_SUCCOUTINTERCUXN 指标修正 before：" + reader.get(HO_SUCCOUTINTERCUXN));
-                                        stringList[HO_SUCCOUTINTERCUXN] = reader.get(HO_ATTOUTINTERCUXN);
-                                        logger.info("HO_SUCCOUTINTERCUXN 指标修正 after：" + stringList[HO_SUCCOUTINTERCUXN]);
-
-                                        logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 before：" + reader.get(HO_SUCCOUTINTRACUINTERDU));
-                                        stringList[HO_SUCCOUTINTRACUINTERDU] = reader.get(HO_ATTOUTINTRACUINTERDU);
-                                        logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 after：" + stringList[HO_SUCCOUTINTRACUINTERDU]);
                                     }
 
                                 } catch (Exception e) {

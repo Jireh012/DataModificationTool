@@ -10,6 +10,7 @@ import org.zayl.jireh.tool.datahandle.model.type0.HandleGnbSaCuThread;
 import org.zayl.jireh.tool.datahandle.model.type0.HandleGnbSaDuThread;
 import org.zayl.jireh.tool.datahandle.model.type3.HandleGnbSaLcuThread;
 import org.zayl.jireh.tool.datahandle.model.type3.HandleGnbSaLcupThread;
+import org.zayl.jireh.tool.datahandle.model.type3.HandleGnbSaLduThread;
 import org.zayl.jireh.tool.datahandle.util.CommonUtils;
 
 import java.io.File;
@@ -50,9 +51,10 @@ public class ExtractedType3 {
             int on2 = (int) sheetRow.getCell(3).getNumericCellValue();
             int on3 = (int) sheetRow.getCell(4).getNumericCellValue();
             int on4 = (int) sheetRow.getCell(5).getNumericCellValue();
+            int on5 = (int) sheetRow.getCell(6).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3 + "￥" + on4;
+            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3 + "￥" + on4+ "￥" + on5;
 
             if (map.containsKey(source)) {
                 map.get(source).add(e);
@@ -68,27 +70,34 @@ public class ExtractedType3 {
         int threadNum = map.size();
         CountDownLatch threadSignal1 = new CountDownLatch(threadNum);
         CountDownLatch threadSignal2 = new CountDownLatch(threadNum);
+        CountDownLatch threadSignal3 = new CountDownLatch(threadNum);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("data-modify-pool-%d").setDaemon(true).build();
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(threadNum,
                 threadFactory);
         ScheduledExecutorService executorService2 = new ScheduledThreadPoolExecutor(threadNum,
                 threadFactory);
+        ScheduledExecutorService executorService3 = new ScheduledThreadPoolExecutor(threadNum,
+                threadFactory);
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             Runnable task1 = new HandleGnbSaLcuThread(threadSignal1, entry);
             Runnable task2 = new HandleGnbSaLcupThread(threadSignal2, entry);
+            Runnable task3 = new HandleGnbSaLduThread(threadSignal3, entry);
             // 执行
             executorService.execute(task1);
             executorService2.execute(task2);
+            executorService3.execute(task3);
         }
 
         // 等待所有子线程执行完
         threadSignal1.await();
         threadSignal2.await();
+        threadSignal3.await();
 
         //固定线程池执行完成后 将释放掉资源 退出主进程
         //并不是终止线程的运行，而是禁止在这个Executor中添加新的任务
         executorService.shutdown();
         executorService2.shutdown();
+        executorService3.shutdown();
     }
 }
