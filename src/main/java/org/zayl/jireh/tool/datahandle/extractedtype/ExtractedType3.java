@@ -52,9 +52,11 @@ public class ExtractedType3 {
             int on3 = (int) sheetRow.getCell(4).getNumericCellValue();
             int on4 = (int) sheetRow.getCell(5).getNumericCellValue();
             int on5 = (int) sheetRow.getCell(6).getNumericCellValue();
+            int on6 = (int) sheetRow.getCell(7).getNumericCellValue();
+            int on7 = (int) sheetRow.getCell(8).getNumericCellValue();
 
             // map是否包含此key，若已经包含则添加一个新的数字到对应value集合中
-            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3 + "￥" + on4+ "￥" + on5;
+            String e = source + "￥" + aims + "￥" + on1 + "￥" + on2 + "￥" + on3 + "￥" + on4+ "￥" + on5+ "￥" + on6+ "￥" + on7;
 
             if (map.containsKey(source)) {
                 map.get(source).add(e);

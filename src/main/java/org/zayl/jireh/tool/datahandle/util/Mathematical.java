@@ -30,4 +30,12 @@ public class Mathematical {
         return (int)num;
     }
 
+    public static double StringToDouble(String d){
+        double num;
+        DecimalFormat myformat=new DecimalFormat("#0");
+        num=Double.parseDouble(d);//装换为double类型
+        num=Double.parseDouble(myformat.format(num));//保留2为小数
+        return num;
+    }
+
 }

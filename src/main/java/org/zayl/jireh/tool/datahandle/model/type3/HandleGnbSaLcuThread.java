@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.zayl.jireh.tool.datahandle.util.Const.*;
 import static org.zayl.jireh.tool.datahandle.util.FileUtil.isChartPathExist;
+import static org.zayl.jireh.tool.datahandle.util.Mathematical.StringToDouble;
 import static org.zayl.jireh.tool.datahandle.util.Mathematical.StringToInt;
 
 /**
@@ -27,6 +28,20 @@ import static org.zayl.jireh.tool.datahandle.util.Mathematical.StringToInt;
  */
 public class HandleGnbSaLcuThread implements Runnable {
 
+    private static int IRATHO_ATTOUTEUTRAN = 0;
+    private static int IRATHO_ATTOUTEUTRAN_EPSFALLBACK = 0;
+    private static int IRATHO_SUCCOUTEUTRAN_EPSFALLBACK = 0;
+    private static int IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK = 0;
+    private static int IRATHO_SUCCPREPOUTEUTRAN = 0;
+    private static int IRATHO_SUCCOUTEUTRAN = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN_AMF = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN = 0;
+    private static int IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE = 0;
+    private static int RRC_REDIRECTTOLTE = 0;
+    private static int RRC_REDIRECTTOLTE_EPSFALLBACK = 0;
     private static int FLOW_NBRFAILESTAB = 0;
     private static int FLOW_NBRFAILESTAB_CAUSETRANSPORT = 0;
     private static int FLOW_NBRFAILESTAB_CAUSERADIORESOURCESNOTAVAILABLE = 0;
@@ -63,6 +78,48 @@ public class HandleGnbSaLcuThread implements Runnable {
         //初始化相关列位置
         while (i < reader.getValues().length) {
             switch (reader.get(i)) {
+                case "IRATHO.AttOutEutran":
+                    IRATHO_ATTOUTEUTRAN = i;
+                    break;
+                case "IRATHO.AttOutEutran.EpsFallBack":
+                    IRATHO_ATTOUTEUTRAN_EPSFALLBACK = i;
+                    break;
+                case "IRATHO.SuccOutEutran.EpsFallBack":
+                    IRATHO_SUCCOUTEUTRAN_EPSFALLBACK = i;
+                    break;
+                case "IRATHO.SuccPrepOutEutran.EpsFallBack":
+                    IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK = i;
+                    break;
+                case "IRATHO.SuccPrepOutEutran":
+                    IRATHO_SUCCPREPOUTEUTRAN = i;
+                    break;
+                case "IRATHO.SuccOutEutran":
+                    IRATHO_SUCCOUTEUTRAN = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran.AMF":
+                    IRATHO_FAILPREPOUTEUTRAN_AMF = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran.EpsFallBack.AMF":
+                    IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran.EpsFallBack.NoReply":
+                    IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran.EpsFallBack.PrepFailure":
+                    IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran":
+                    IRATHO_FAILPREPOUTEUTRAN = i;
+                    break;
+                case "IRATHO.FailPrepOutEutran.PrepFailure":
+                    IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE = i;
+                    break;
+                case "RRC.RedirectToLTE ":
+                    RRC_REDIRECTTOLTE = i;
+                    break;
+                case "RRC.RedirectToLTE.Epsfallback":
+                    RRC_REDIRECTTOLTE_EPSFALLBACK = i;
+                    break;
                 case "HO.SuccOutIntraDU":
                     HO_SUCCOUTINTRADU = i;
                     break;
@@ -333,6 +390,8 @@ public class HandleGnbSaLcuThread implements Runnable {
                                 int on1 = Integer.parseInt(li.split("￥")[2]);
                                 int on2 = Integer.parseInt(li.split("￥")[3]);
                                 int on4 = Integer.parseInt(li.split("￥")[5]);
+                                int on6 = Integer.parseInt(li.split("￥")[7]);
+                                int on7 = Integer.parseInt(li.split("￥")[8]);
 
                                 try {
                                     if (on1 == 1) {
@@ -385,6 +444,60 @@ public class HandleGnbSaLcuThread implements Runnable {
                                         logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 before：" + reader.get(HO_SUCCOUTINTRACUINTERDU));
                                         stringList[HO_SUCCOUTINTRACUINTERDU] = reader.get(HO_ATTOUTINTRACUINTERDU);
                                         logger.info("HO_SUCCOUTINTRACUINTERDU 指标修正 after：" + stringList[HO_SUCCOUTINTRACUINTERDU]);
+                                    }
+
+                                    if (on6 == 1 && StringToInt(reader.get(IRATHO_ATTOUTEUTRAN))>0) {
+                                        String value1 = String.valueOf(Math.ceil(StringToDouble(reader.get(IRATHO_ATTOUTEUTRAN)) * 0.99));
+                                        logger.info("IRATHO_ATTOUTEUTRAN_EPSFALLBACK 指标修正 before：" + reader.get(IRATHO_ATTOUTEUTRAN_EPSFALLBACK));
+                                        stringList[IRATHO_ATTOUTEUTRAN_EPSFALLBACK] = value1;
+                                        logger.info("IRATHO_ATTOUTEUTRAN_EPSFALLBACK 指标修正 after：" + stringList[IRATHO_ATTOUTEUTRAN_EPSFALLBACK]);
+
+                                        logger.info("IRATHO_SUCCOUTEUTRAN_EPSFALLBACK 指标修正 before：" + reader.get(IRATHO_SUCCOUTEUTRAN_EPSFALLBACK));
+                                        stringList[IRATHO_SUCCOUTEUTRAN_EPSFALLBACK] = value1;
+                                        logger.info("IRATHO_SUCCOUTEUTRAN_EPSFALLBACK 指标修正 after：" + stringList[IRATHO_SUCCOUTEUTRAN_EPSFALLBACK]);
+
+                                        logger.info("IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK 指标修正 before：" + reader.get(IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK));
+                                        stringList[IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK] = value1;
+                                        logger.info("IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK 指标修正 after：" + stringList[IRATHO_SUCCPREPOUTEUTRAN_EPSFALLBACK]);
+
+                                        logger.info("IRATHO_SUCCPREPOUTEUTRAN 指标修正 before：" + reader.get(IRATHO_SUCCPREPOUTEUTRAN));
+                                        stringList[IRATHO_SUCCPREPOUTEUTRAN] = stringList[IRATHO_ATTOUTEUTRAN];
+                                        logger.info("IRATHO_SUCCPREPOUTEUTRAN 指标修正 after：" + stringList[IRATHO_SUCCPREPOUTEUTRAN]);
+
+                                        logger.info("IRATHO_SUCCOUTEUTRAN 指标修正 before：" + reader.get(IRATHO_SUCCOUTEUTRAN));
+                                        stringList[IRATHO_SUCCOUTEUTRAN] = stringList[IRATHO_ATTOUTEUTRAN];
+                                        logger.info("IRATHO_SUCCOUTEUTRAN 指标修正 after：" + stringList[IRATHO_SUCCOUTEUTRAN]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_AMF 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN_AMF));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN_AMF] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_AMF 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN_AMF]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_AMF]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_NOREPLY]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN_EPSFALLBACK_PREPFAILURE]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN]);
+
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE 指标修正 before：" + reader.get(IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE));
+                                        stringList[IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE] = "0";
+                                        logger.info("IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE 指标修正 after：" + stringList[IRATHO_FAILPREPOUTEUTRAN_PREPFAILURE]);
+
+                                    }
+
+                                    if (on7 == 1 && StringToInt(reader.get(RRC_REDIRECTTOLTE))>0) {
+                                        logger.info("RRC_REDIRECTTOLTE_EPSFALLBACK 指标修正 before：" + reader.get(RRC_REDIRECTTOLTE_EPSFALLBACK));
+                                        stringList[RRC_REDIRECTTOLTE_EPSFALLBACK] = String.valueOf(Math.ceil(StringToDouble(reader.get(RRC_REDIRECTTOLTE))*0.99));
+                                        logger.info("RRC_REDIRECTTOLTE_EPSFALLBACK 指标修正 after：" + stringList[RRC_REDIRECTTOLTE_EPSFALLBACK]);
                                     }
 
                                 } catch (Exception e) {
